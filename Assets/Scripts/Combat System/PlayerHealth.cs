@@ -3,15 +3,15 @@ using UnityEngine;
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Atributos de Vida")]
-    [SerializeField] private int maxHealth = 100; 
-    [SerializeField] private int currentHealth;   
+    [SerializeField] private int maxHealth = 100;
+    [SerializeField] private int currentHealth;
 
     void Start()
     {
         currentHealth = maxHealth;
     }
 
-    
+
     public void TakeDamage(int damageAmount)
     {
         currentHealth -= damageAmount;
@@ -42,5 +42,10 @@ public class PlayerHealth : MonoBehaviour
     {
         Debug.Log(gameObject.name + " ha muerto!");
         gameObject.SetActive(false);
+    }
+    
+    public int GetCurrentHealth()
+    {
+        return currentHealth;
     }
 }
