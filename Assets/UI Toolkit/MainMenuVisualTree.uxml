@@ -1,9 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ui:UXML
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ui="UnityEngine.UIElements"
-    xmlns:uie="UnityEditor.UIElements"
-    xsi:noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd"
->
-    
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/MainMenuStyles.uss?fileID=7433441132597879392&amp;guid=afeecd1c784955a4788e02f9ff4b173b&amp;type=3#MainMenuStyles" />
+    <ui:VisualElement name="main-container" class="main-container">
+        <ui:VisualElement name="title-container" class="title-container">
+            <ui:Label text="HUNGER GAMES BR" name="game-title" class="game-title" />
+        </ui:VisualElement>
+        <ui:VisualElement name="menu-container" class="menu-container">
+            <ui:Button name="play-button" text="PLAY" class="menu-button primary-button" />
+            <ui:Button name="settings-button" text="SETTINGS" class="menu-button secondary-button" />
+            <ui:Button name="quit-button" text="QUIT" class="menu-button secondary-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
 </ui:UXML>
