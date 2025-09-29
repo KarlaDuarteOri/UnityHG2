@@ -71,3 +71,110 @@
     background-color: rgb(44, 62, 80);
     scale: 0.98;
 }
+
+.settings-panel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.settings-container {
+    background-color: rgb(52, 73, 94);
+    border-radius: 20px;
+    border-width: 3px;
+    border-color: rgb(255, 152, 0);
+    width: 600px;
+    max-height: 70%;
+    padding: 30px;
+}
+
+.settings-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.settings-title {
+    font-size: 48px;
+    color: rgb(255, 152, 0);
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    -unity-font-style: bold;
+}
+
+.close-button {
+    width: 40px;
+    height: 40px;
+    background-color: rgb(231, 76, 60);
+    color: white;
+    border-radius: 20px;
+    border-width: 0;
+    font-size: 24px;
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    transition-duration: 0.2s;
+}
+
+.close-button:hover {
+    background-color: rgb(192, 57, 43);
+    scale: 1.1;
+}
+
+.settings-content {
+    background-color: transparent;
+}
+
+.settings-section {
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 24px;
+    color: rgb(255, 152, 0);
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    -unity-font-style: bold;
+    margin-bottom: 15px;
+}
+
+.setting-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    min-height: 30px;
+}
+
+.setting-label {
+    font-size: 18px;
+    color: white;
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    width: 180px;
+}
+
+.setting-slider {
+    width: 200px;
+    height: 20px;
+}
+
+.setting-dropdown {
+    width: 150px;
+    height: 30px;
+    background-color: rgb(44, 62, 80);
+    border-radius: 5px;
+    color: white;
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+}
+
+.setting-toggle {
+    width: 50px;
+}
+
+.setting-value {
+    font-size: 16px;
+    color: rgb(255, 152, 0);
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    width: 60px;
+    -unity-text-align: middle-center;
+}

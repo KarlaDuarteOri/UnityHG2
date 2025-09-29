@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -9,54 +10,152 @@ public class MainMenuController : MonoBehaviour
     private Button settingsButton;
     private Button quitButton;
 
+    // Settings Panel Elements
+    private VisualElement settingsPanel;
+    private Button closeSettingsButton;
+    private DropdownField resolutionDropdown;
+    private DropdownField framerateDropdown;
+    private Slider masterVolumeSlider;
+    private Slider mouseSensitivitySlider;
+    private Slider fovSlider;
+    private Label masterVolumeValue;
+    private Label mouseSensitivityValue;
+    private Label fovValue;
+
     void Start()
     {
         // Get the root visual element from the UI Document
         var uiDocument = GetComponent<UIDocument>();
         root = uiDocument.rootVisualElement;
 
-        // Find buttons by their names
+        // Find main menu elements
         playButton = root.Q<Button>("play-button");
         settingsButton = root.Q<Button>("settings-button");
         quitButton = root.Q<Button>("quit-button");
 
-        // Register button events (functionality can be added later)
+        // Find settings panel elements
+        settingsPanel = root.Q<VisualElement>("settings-panel");
+        closeSettingsButton = root.Q<Button>("close-settings-button");
+        resolutionDropdown = root.Q<DropdownField>("resolution-dropdown");
+        framerateDropdown = root.Q<DropdownField>("framerate-dropdown");
+        masterVolumeSlider = root.Q<Slider>("master-volume-slider");
+        mouseSensitivitySlider = root.Q<Slider>("mouse-sensitivity-slider");
+        fovSlider = root.Q<Slider>("fov-slider");
+        masterVolumeValue = root.Q<Label>("master-volume-value");
+        mouseSensitivityValue = root.Q<Label>("mouse-sensitivity-value");
+        fovValue = root.Q<Label>("fov-value");
+
+        // Setup events and initialize dropdowns
         SetupButtonEvents();
+        InitializeSettingsPanel();
     }
 
     private void SetupButtonEvents()
     {
-        // Play button - will load game scene later
+        // Main menu buttons
         playButton.clicked += OnPlayClicked;
-
-        // Settings button - will open settings panel later
         settingsButton.clicked += OnSettingsClicked;
-
-        // Quit button - will quit application
         quitButton.clicked += OnQuitClicked;
+
+        // Settings panel buttons
+        closeSettingsButton.clicked += OnCloseSettingsClicked;
+
+        // Settings sliders events
+        masterVolumeSlider.RegisterValueChangedCallback(OnMasterVolumeChanged);
+        mouseSensitivitySlider.RegisterValueChangedCallback(OnMouseSensitivityChanged);
+        fovSlider.RegisterValueChangedCallback(OnFOVChanged);
+    }
+
+    private void InitializeSettingsPanel()
+    {
+        // Initialize Resolution dropdown
+        resolutionDropdown.choices = new List<string>
+        {
+            "1920x1080",
+            "1366x768",
+            "1280x720",
+            "1024x768",
+            "800x600"
+        };
+        resolutionDropdown.value = "1920x1080";
+
+        // Initialize Framerate dropdown
+        framerateDropdown.choices = new List<string>
+        {
+            "30",
+            "60",
+            "120",
+            "Unlimited"
+        };
+        framerateDropdown.value = "60";
+
+        // Initialize slider values
+        UpdateVolumeLabel(masterVolumeSlider.value);
+        UpdateMouseSensitivityLabel(mouseSensitivitySlider.value);
+        UpdateFOVLabel(fovSlider.value);
     }
 
     private void OnPlayClicked()
     {
         Debug.Log("Play button clicked!");
-        // TODO: Load game scene or show player name input
+        // TODO: Load game scene or open lobby ui window
         // SceneManager.LoadScene("GameScene");
     }
 
     private void OnSettingsClicked()
     {
         Debug.Log("Settings button clicked!");
-        // TODO: Show settings panel
+        settingsPanel.style.display = DisplayStyle.Flex;
+    }
+
+    private void OnCloseSettingsClicked()
+    {
+        Debug.Log("Close settings button clicked!");
+        settingsPanel.style.display = DisplayStyle.None;
     }
 
     private void OnQuitClicked()
     {
         Debug.Log("Quit button clicked!");
-        // TODO: Show quit confirmation or quit directly
         Application.Quit();
 
         #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
         #endif
+    }
+
+    // Settings event handlers
+    private void OnMasterVolumeChanged(ChangeEvent<float> evt)
+    {
+        UpdateVolumeLabel(evt.newValue);
+        // TODO: Apply volume change
+    }
+
+    private void OnMouseSensitivityChanged(ChangeEvent<float> evt)
+    {
+        UpdateMouseSensitivityLabel(evt.newValue);
+        // TODO: Apply sensitivity change
+    }
+
+    private void OnFOVChanged(ChangeEvent<float> evt)
+    {
+        UpdateFOVLabel(evt.newValue);
+        // TODO: Apply FOV change
+    }
+
+    // Label update methods
+    private void UpdateVolumeLabel(float value)
+    {
+        masterVolumeValue.text = $"{value:F0}%";
+    }
+
+    private void UpdateMouseSensitivityLabel(float value)
+    {
+        mouseSensitivityValue.text = $"{value:F1}";
+    }
+
+    private void UpdateFOVLabel(float value)
+    {
+        fovValue.text = $"{value:F0}°";
     }
 }
