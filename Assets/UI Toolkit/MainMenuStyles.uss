@@ -204,13 +204,26 @@
 }
 
 .setting-dropdown {
-    width: 150px;
-    height: 30px;
+    width: 180px;
+    height: 35px;
     background-color: rgb(44, 62, 80);
     border-radius: 5px;
     color: white;
     font-size: 16px;
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+}
+
+.setting-dropdown .unity-base-dropdown__label {
+    padding: 8px;
+    min-height: 35px;
+    -unity-text-align: middle-center;
+    font-size: 16px;
+    color: white;
+}
+
+.setting-dropdown .unity-base-dropdown__arrow {
+    width: 12px;
+    height: 12px;
 }
 
 .setting-toggle {
