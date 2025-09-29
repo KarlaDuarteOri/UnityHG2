@@ -6,6 +6,51 @@
     flex-direction: column;
 }
 
+.player-name-container {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(52, 73, 94, 0.9);
+    border-radius: 10px;
+    padding: 10px 15px;
+    border-width: 2px;
+    border-color: rgba(255, 152, 0, 0.5);
+}
+
+.player-name-label {
+    font-size: 18px;
+    color: rgb(255, 152, 0);
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    margin-right: 10px;
+}
+
+.player-name-field {
+    width: 180px;
+    height: 35px;
+    font-size: 16px;
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgba(255, 152, 0, 0.3);
+}
+
+.player-name-field > .unity-text-field__input {
+    background-color: rgba(30, 40, 50, 0.9);
+    color: white;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 5px;
+    min-height: 35px;
+    -unity-text-align: middle-left;
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+}
+
+.player-name-field:focus {
+    border-color: rgb(255, 152, 0);
+}
+
 .title-container {
     justify-content: center;
     align-items: center;
@@ -164,6 +209,7 @@
     background-color: rgb(44, 62, 80);
     border-radius: 5px;
     color: white;
+    font-size: 16px;
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
 }
 

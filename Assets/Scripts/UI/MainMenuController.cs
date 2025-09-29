@@ -10,6 +10,9 @@ public class MainMenuController : MonoBehaviour
     private Button settingsButton;
     private Button quitButton;
 
+    // Player Name Field
+    private TextField playerNameField;
+
     // Settings Panel Elements
     private VisualElement settingsPanel;
     private Button closeSettingsButton;
@@ -32,6 +35,9 @@ public class MainMenuController : MonoBehaviour
         playButton = root.Q<Button>("play-button");
         settingsButton = root.Q<Button>("settings-button");
         quitButton = root.Q<Button>("quit-button");
+
+        // Find player name field
+        playerNameField = root.Q<TextField>("player-name-field");
 
         // Find settings panel elements
         settingsPanel = root.Q<VisualElement>("settings-panel");
@@ -93,11 +99,21 @@ public class MainMenuController : MonoBehaviour
         UpdateVolumeLabel(masterVolumeSlider.value);
         UpdateMouseSensitivityLabel(mouseSensitivitySlider.value);
         UpdateFOVLabel(fovSlider.value);
+
+        // Load saved player name if exists
+        string savedPlayerName = PlayerPrefs.GetString("PlayerName", "Player");
+        playerNameField.value = savedPlayerName;
+
+        // Register player name focus out event
+        playerNameField.RegisterCallback<FocusOutEvent>(OnPlayerNameFocusLost);
     }
 
     private void OnPlayClicked()
     {
-        Debug.Log("Play button clicked!");
+        Debug.Log($"Play button clicked! Player name: {playerNameField.value}");
+        // Save player name before loading game
+        PlayerPrefs.SetString("PlayerName", playerNameField.value);
+        PlayerPrefs.Save();
         // TODO: Load game scene or open lobby ui window
         // SceneManager.LoadScene("GameScene");
     }
@@ -157,5 +173,12 @@ public class MainMenuController : MonoBehaviour
     private void UpdateFOVLabel(float value)
     {
         fovValue.text = $"{value:F0}°";
+    }
+
+    private void OnPlayerNameFocusLost(FocusOutEvent evt)
+    {
+        // Save player name when field loses focus
+        PlayerPrefs.SetString("PlayerName", playerNameField.value);
+        PlayerPrefs.Save();
     }
 }

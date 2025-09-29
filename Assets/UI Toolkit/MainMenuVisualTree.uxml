@@ -1,6 +1,12 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/MainMenuStyles.uss?fileID=7433441132597879392&amp;guid=afeecd1c784955a4788e02f9ff4b173b&amp;type=3#MainMenuStyles" />
     <ui:VisualElement name="main-container" class="main-container">
+        <!-- Player Name Input in corner -->
+        <ui:VisualElement name="player-name-container" class="player-name-container">
+            <ui:Label text="Player Name:" class="player-name-label" />
+            <ui:TextField name="player-name-field" value="Player" max-length="20" class="player-name-field" />
+        </ui:VisualElement>
+
         <ui:VisualElement name="title-container" class="title-container">
             <ui:Label text="HUNGER GAMES BR" name="game-title" class="game-title" />
         </ui:VisualElement>
