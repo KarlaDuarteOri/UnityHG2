@@ -2,12 +2,8 @@ using UnityEngine;
 
 public class HealthRegeneration : MonoBehaviour
 {
-    //[Header("Configuración de Regeneración")]
-    //[SerializeField]
-    private float regenDelay = 8f;
-    //[SerializeField]
+    private float regenDelay = 5f;
     private int regenRate = 1;
-    //[SerializeField]
     private float healInterval = 0.1f; 
 
     private PlayerHealth playerHealth;
@@ -35,6 +31,8 @@ public class HealthRegeneration : MonoBehaviour
         }
     }
 
+    //corregir esto, si hacen daño nuevamente al jugador mientras está esperando la corutina entonces 
+    //la primer corutina va a establecer en falso el recibir daño antes de tiempo y estaría incorrecto
     public void OnDamageTaken()
     {
         isTakingDamage = true;

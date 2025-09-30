@@ -23,7 +23,8 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentHealth == 0)
         {
-            StartCoroutine(DieAfterFrame());
+            StartCoroutine(DieAfterFrame()); //Si no se hace esto el hud de vida no se termina de actualizar 
+                                             // porque el jugador se inactiva antes
         }
     }
 

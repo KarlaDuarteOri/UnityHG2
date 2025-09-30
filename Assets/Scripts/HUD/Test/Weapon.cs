@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 
+//Clase de prueba, quitarla después o adaptarla con la de Fredrick
 public class Weapon : MonoBehaviour
 {
     public event Action<int, int> OnAmmoChanged;
@@ -12,7 +13,7 @@ public class Weapon : MonoBehaviour
     void Start()
     {
         currentAmmo = maxAmmo;
-        NotifyAmmoChanged(); 
+        NotifyAmmoChanged();
     }
 
     public bool Shoot()
@@ -20,11 +21,11 @@ public class Weapon : MonoBehaviour
         if (currentAmmo > 0)
         {
             currentAmmo--;
-            NotifyAmmoChanged(); 
-            Debug.Log("Disparo realizado. Munición: " + currentAmmo);
+            NotifyAmmoChanged();
+            Debug.Log("Disparo. Munición: " + currentAmmo);
             return true;
         }
-        
+
         Debug.Log("Sin munición!");
         return false;
     }
@@ -32,7 +33,7 @@ public class Weapon : MonoBehaviour
     public void Reload()
     {
         currentAmmo = maxAmmo;
-        NotifyAmmoChanged(); 
+        NotifyAmmoChanged();
         Debug.Log("Recargado. Munición: " + currentAmmo);
     }
 

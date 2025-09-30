@@ -57,7 +57,7 @@ public class WeaponAmmoHUD : MonoBehaviour
         if (ammoText != null)
             ammoText.text = $"Ammo: {current} / {max}";
             
-        //Cambiar color cuando la munición es baja
+        //Cambiar a rojo la letra si queda poca municion
         if (current <= max * 0.2f) 
             ammoText.color = Color.red;
         else
