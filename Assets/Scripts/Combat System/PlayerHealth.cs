@@ -23,8 +23,14 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentHealth == 0)
         {
-            Die();
+            StartCoroutine(DieAfterFrame());
         }
+    }
+
+    private System.Collections.IEnumerator DieAfterFrame()
+    {
+        yield return new WaitForEndOfFrame();
+        Die();
     }
 
 
