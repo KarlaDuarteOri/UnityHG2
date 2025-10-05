@@ -1,9 +1,15 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Asset Store/Polytope Studio/Lowpoly_Environments/Sources.meta
 guid: 50084c0ced59c5243b289606ec1aaa1d
 folderAsset: yes
 timeCreated: 1527619262
 licenseType: Store
+========
+guid: 2403e8f8c5b7c00468eb10b5df341ac9
+folderAsset: yes
+>>>>>>>> Cristian:Assets/Photon/Fusion/Editor.meta
 DefaultImporter:
+  externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 

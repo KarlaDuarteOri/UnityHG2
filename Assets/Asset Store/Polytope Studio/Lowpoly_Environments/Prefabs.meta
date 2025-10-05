@@ -1,9 +1,15 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Asset Store/Polytope Studio/Lowpoly_Environments/Prefabs.meta
 guid: 3ba94cc50bb068c4bb427a52fdcb0038
 folderAsset: yes
 timeCreated: 1527654178
 licenseType: Store
+========
+guid: bf2b09552ecf8f04294975e07f8da67e
+folderAsset: yes
+>>>>>>>> Cristian:Assets/StarterAssets/TutorialInfo/Icons.meta
 DefaultImporter:
+  externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
