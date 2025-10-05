@@ -36,7 +36,7 @@ public class Arrow : MonoBehaviour
             enemy.TakeDamage(10); // daño configurable
         }
 
-        // Destruir después de 5 segundos
-        Destroy(gameObject, 5f);
+        // Destruir después de 1 segundos
+        Destroy(gameObject, 1f);
     }
 }
