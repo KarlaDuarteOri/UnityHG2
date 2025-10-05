@@ -85,7 +85,7 @@ public class StaminaSystem : MonoBehaviour
     bool IsMovingForward()
     {
         // Método 1: Usar el PlayerInput del Starter Assets
-        PlayerInput playerInput = FindObjectOfType<PlayerInput>();
+        PlayerInput playerInput = FindFirstObjectByType<PlayerInput>();
         if (playerInput != null)
         {
             Vector2 moveInput = playerInput.actions["Move"].ReadValue<Vector2>();
@@ -134,7 +134,7 @@ public class StaminaSystem : MonoBehaviour
         }
 
         // Verificar movimiento
-        PlayerInput playerInput = FindObjectOfType<PlayerInput>();
+        PlayerInput playerInput = FindFirstObjectByType<PlayerInput>();
         if (playerInput != null)
         {
             Vector2 moveInput = playerInput.actions["Move"].ReadValue<Vector2>();
