@@ -1,13 +1,7 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/Asset Store.meta
-guid: 4ee0b0c56f1c1f749bd97d09f8873ec2
-folderAsset: yes
-DefaultImporter:
-========
 guid: cf82d9618a28dde43842b471d69d4600
 PrefabImporter:
->>>>>>>> Cristian:Assets/Scenes/SpawnCircle.prefab.meta
   externalObjects: {}
-  userData: 
-  assetBundleName: 
+  userData:
+  assetBundleName:
   assetBundleVariant: 
