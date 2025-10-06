@@ -6,7 +6,7 @@ public class NetworkPlayer : NetworkBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotationSpeed = 200f;
-    [SerializeField] private float jumpForce = 5f;
+    [SerializeField] private float jumpForce = 3f;
 
     [Header("Ground Check")]
     [SerializeField] private float groundCheckDistance = 0.1f;
@@ -81,39 +81,41 @@ public class NetworkPlayer : NetworkBehaviour
     }
 
     private void HandleMovement()
+{
+    // Obtener input
+    float horizontal = Input.GetAxis("Horizontal"); // A/D o flechas
+    float vertical = Input.GetAxis("Vertical");     // W/S o flechas
+
+    // Calcular dirección de movimiento
+    Vector3 movement = new Vector3(horizontal, 0, vertical).normalized;
+    
+    if (movement.magnitude > 0.1f)
     {
-        // Obtener input
-        float horizontal = Input.GetAxis("Horizontal"); // A/D o flechas
-        float vertical = Input.GetAxis("Vertical");     // W/S o flechas
-
-        // Calcular dirección de movimiento
-        Vector3 movement = new Vector3(horizontal, 0, vertical).normalized;
+        // Mover el personaje
+        Vector3 move = movement * moveSpeed * Runner.DeltaTime;
+        characterController.Move(move);
         
-        if (movement.magnitude > 0.1f)
-        {
-            // Mover el personaje
-            Vector3 move = movement * moveSpeed * Runner.DeltaTime;
-            characterController.Move(move);
-            
-            // Rotar hacia la dirección del movimiento
-            Quaternion targetRotation = Quaternion.LookRotation(movement);
-            transform.rotation = Quaternion.RotateTowards(
-                transform.rotation, 
-                targetRotation, 
-                rotationSpeed * Runner.DeltaTime
-            );
-        }
-
-        // Salto
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
-        }
-
-        // Actualizar variables de red
-        networkPosition = transform.position;
-        networkRotation = transform.rotation;
+        // Rotar hacia la dirección del movimiento
+        Quaternion targetRotation = Quaternion.LookRotation(movement);
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation, 
+            targetRotation, 
+            rotationSpeed * Runner.DeltaTime
+        );
     }
+
+    // Salto - CAMBIADO: usa GetKeyDown en lugar de GetButtonDown para más respuesta
+    // Y permite saltar aunque te estés moviendo
+    if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+    {
+        velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+        Debug.Log("¡Saltando!");
+    }
+
+    // Actualizar variables de red
+    networkPosition = transform.position;
+    networkRotation = transform.rotation;
+}
 
     private void HandleGravity()
     {
