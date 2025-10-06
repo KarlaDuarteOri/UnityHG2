@@ -21,7 +21,7 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
     [Header("UI References")]
     [SerializeField] private GameObject lobbyPanel;
     [SerializeField] private GameObject loadingPanel;
-    [SerializeField] private UnityEngine.UI.Text statusText;
+    [SerializeField] private TMPro.TextMeshProUGUI statusText;
 
     private void Awake()
     {
