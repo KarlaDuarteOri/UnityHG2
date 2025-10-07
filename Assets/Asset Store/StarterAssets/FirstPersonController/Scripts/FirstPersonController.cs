@@ -16,6 +16,8 @@ namespace StarterAssets
 		public float MoveSpeed = 4.0f;
 		[Tooltip("Sprint speed of the character in m/s")]
 		public float SprintSpeed = 6.0f;
+		[Tooltip("Crouch speed of the character in m/s")]
+	    public float CrouchSpeed = 2.0f;
 		[Tooltip("Rotation speed of the character")]
 		public float RotationSpeed = 1.0f;
 		[Tooltip("Acceleration and deceleration")]
@@ -64,6 +66,20 @@ namespace StarterAssets
 		private float _jumpTimeoutDelta;
 		private float _fallTimeoutDelta;
 
+		//Agacharse
+		private bool _isCrouching = false;
+		private float _currentHeight;
+		private float _targetHeight;
+
+		//Agacharse
+		[Header("Crouch Settings")]
+		[Tooltip("Crouch height of the character")]
+		public float CrouchHeight = 1.0f;
+		[Tooltip("Standing height of the character")]
+		public float StandHeight = 2.0f;
+		[Tooltip("Crouch transition speed")]
+		public float CrouchTransitionSpeed = 5.0f;
+
 	
 #if ENABLE_INPUT_SYSTEM
 		private PlayerInput _playerInput;
@@ -108,12 +124,17 @@ namespace StarterAssets
 			// reset our timeouts on start
 			_jumpTimeoutDelta = JumpTimeout;
 			_fallTimeoutDelta = FallTimeout;
+
+			 _currentHeight = StandHeight;
+			_targetHeight = StandHeight;
+			_controller.height = _currentHeight;
 		}
 
 		private void Update()
 		{
 			JumpAndGravity();
 			GroundedCheck();
+			Crouch();
 			Move();
 		}
 
@@ -155,6 +176,11 @@ namespace StarterAssets
 		{
 			// set target speed based on move speed, sprint speed and if sprint is pressed
 			float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+
+			if (_isCrouching)
+			{
+				targetSpeed = CrouchSpeed;
+			}
 
 			// a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -198,6 +224,61 @@ namespace StarterAssets
 			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 		}
 
+		private void Crouch()
+		{
+			//Manejar agacharse
+			bool wantsToCrouch = Keyboard.current != null && 
+								(Keyboard.current.ctrlKey.isPressed || Keyboard.current.cKey.isPressed);
+
+			// Determinar si debe agacharse
+			if (wantsToCrouch && Grounded && !_isCrouching)
+			{
+				// Comenzar a agacharse
+				_isCrouching = true;
+				_targetHeight = CrouchHeight;
+			}
+			else if (!wantsToCrouch && _isCrouching)
+			{
+				// Verificar si hay espacio para levantarse
+				if (CanStandUp())
+				{
+					_isCrouching = false;
+					_targetHeight = StandHeight;
+				}
+			}
+
+			// Transición suave de altura
+			if (Mathf.Abs(_controller.height - _targetHeight) > 0.01f)
+			{
+				_currentHeight = Mathf.Lerp(_controller.height, _targetHeight, CrouchTransitionSpeed * Time.deltaTime);
+				_controller.height = _currentHeight;
+
+				// Ajustar la posición de la cámara
+				if (CinemachineCameraTarget != null)
+				{
+					Vector3 cameraPos = CinemachineCameraTarget.transform.localPosition;
+					cameraPos.y = _currentHeight - 0.3f; // Ajuste para mantener cámara a altura de ojos
+					CinemachineCameraTarget.transform.localPosition = cameraPos;
+				}
+			}
+		}
+
+		//  Verificar si puede levantarse
+		private bool CanStandUp()
+		{
+			// Raycast para verificar si hay espacio arriba
+			float raycastHeight = StandHeight + 0.1f; // Pequeño margen
+			Vector3 raycastOrigin = transform.position + Vector3.up * 0.1f; // Pequeño offset desde el suelo
+			
+			if (Physics.Raycast(raycastOrigin, Vector3.up, out RaycastHit hit, raycastHeight, GroundLayers))
+			{
+				// Hay algo arriba, no puede levantarse
+				return false;
+			}
+			
+			return true;
+		}
+
 		private void JumpAndGravity()
 		{
 			if (Grounded)
@@ -212,7 +293,7 @@ namespace StarterAssets
 				}
 
 				// Jump
-				if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+				if (_input.jump && _jumpTimeoutDelta <= 0.0f && !_isCrouching)
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
 					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
