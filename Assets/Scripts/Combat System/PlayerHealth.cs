@@ -30,7 +30,7 @@ public class PlayerHealth : MonoBehaviour
 
     private System.Collections.IEnumerator DieAfterFrame()
     {
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSeconds(1);
         Die();
     }
 

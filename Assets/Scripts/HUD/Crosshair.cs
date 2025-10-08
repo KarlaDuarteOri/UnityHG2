@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
+//Modificar para que tenga como requisito para activarse el crosshair que el personaje tenga equipada un arma
 public class Crosshair : MonoBehaviour
 {
     [Header("Crosshair Settings")]
