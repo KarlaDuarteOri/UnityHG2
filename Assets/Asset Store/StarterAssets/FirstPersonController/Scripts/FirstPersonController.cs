@@ -216,6 +216,7 @@ namespace StarterAssets
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
 					_verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+					Debug.Log($"SALTANDO! Fuerza: {_verticalVelocity}");
 				}
 
 				// jump timeout
@@ -244,6 +245,7 @@ namespace StarterAssets
 			{
 				_verticalVelocity += Gravity * Time.deltaTime;
 			}
+			Debug.Log($"Grounded: {Grounded} | VerticalVelocity: {_verticalVelocity} | Gravity: {Gravity}");
 		}
 
 		private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
