@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Fusion;
 
 public class PlayerHUD : MonoBehaviour
 {
@@ -24,6 +23,17 @@ public class PlayerHUD : MonoBehaviour
 
     void Start()
     {
+        if (healthBar == null)
+            healthBar = GameObject.Find("HealthBar")?.GetComponent<Slider>();
+        if (shieldBar == null)
+            shieldBar = GameObject.Find("ShieldBar")?.GetComponent<Slider>();
+        if (healthText == null)
+            healthText = GameObject.Find("HealthText")?.GetComponent<TextMeshProUGUI>();
+        if (shieldText == null)
+            shieldText = GameObject.Find("ShieldText")?.GetComponent<TextMeshProUGUI>();
+        if (healthFill == null)
+            healthFill = GameObject.Find("Fill")?.GetComponent<Image>();
+            
         currentHealthDisplay = 0f;
         currentShieldDisplay = 0f;
 
