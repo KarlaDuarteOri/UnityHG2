@@ -1,27 +1,44 @@
+using Fusion;
 using UnityEngine;
 
-public class PlayerHealth : MonoBehaviour
+
+public class PlayerHealth : NetworkBehaviour
 {
     [Header("Atributos de Vida")]
     [SerializeField] private int maxHealth = 100;
-    [SerializeField] private int currentHealth;
+    [Networked]
+    public int currentHealth { get; set; }
 
-    void Start()
+    [Networked]
+    public bool IsAlive { get; set; }
+
+    public System.Action<int, int> OnHealthChanged; //current, max
+    public System.Action OnDeath;
+
+    public override void Spawned()
     {
-        currentHealth = maxHealth;
+        if (HasStateAuthority)
+        {
+            currentHealth = maxHealth;
+            IsAlive = true;
+            OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        }
     }
 
 
     public void TakeDamage(int damageAmount)
     {
+        if (!HasStateAuthority || !IsAlive) return;
+
         currentHealth -= damageAmount;
 
-        if (currentHealth < 0)
-            currentHealth = 0;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); //Limitar la vida entre 0 y maxHealth
 
         Debug.Log(gameObject.name + " recibió " + damageAmount + " de daño. Vida actual: " + currentHealth);
 
-        if (currentHealth == 0)
+        OnHealthChanged?.Invoke(currentHealth, maxHealth); //Notificar de cambios al HUD
+
+        if (currentHealth <= 0)
         {
             StartCoroutine(DieAfterFrame()); //Si no se hace esto el hud de vida no se termina de actualizar 
                                              // porque el jugador se inactiva antes
@@ -37,22 +54,41 @@ public class PlayerHealth : MonoBehaviour
 
     public void Heal(int healAmount)
     {
-        currentHealth += healAmount;
+        if (!HasStateAuthority || !IsAlive) return;
 
-        if (currentHealth > maxHealth)
-            currentHealth = maxHealth;
+        currentHealth += healAmount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
         Debug.Log(gameObject.name + " fue curado. Vida actual: " + currentHealth);
+
+        OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
     private void Die()
     {
-        Debug.Log(gameObject.name + " ha muerto!");
-        gameObject.SetActive(false);
+        if (HasStateAuthority && IsAlive)
+        {
+            IsAlive = false;
+            Debug.Log(gameObject.name + " ha muerto!");
+            
+            OnDeath?.Invoke();
+            
+            // Notificar al contador de jugadores
+            AlivePlayersCounter counter = FindFirstObjectByType<AlivePlayersCounter>();
+            if (counter != null) 
+                //counter.NotifyPlayerDeath();
+            
+            gameObject.SetActive(false);
+        }
     }
-    
+
     public int GetCurrentHealth()
     {
         return currentHealth;
+    }
+
+    public int GetMaxHealth()
+    {
+        return maxHealth;
     }
 }
