@@ -16,6 +16,9 @@ public class AlivePlayersCounter : NetworkBehaviour
 
     public override void Spawned()
     {
+        if (alivePlayersText == null)
+            alivePlayersText = GameObject.Find("AlivePlayersText")?.GetComponent<TextMeshProUGUI>();
+
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
         if (Object.HasStateAuthority)
@@ -40,8 +43,8 @@ public class AlivePlayersCounter : NetworkBehaviour
     {
         if (alivePlayersText != null)
         {
-            alivePlayersText.text = aliveCount.ToString();
-            //alivePlayersText.text = $"{aliveCount}
+            //alivePlayersText.text = aliveCount.ToString();
+            alivePlayersText.text = $"Alive: {aliveCount}";
             // o en texto
         }
     }
