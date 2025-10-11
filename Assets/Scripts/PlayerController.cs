@@ -1,69 +1,119 @@
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(PlayerInput))]
-public class PlayerController : MonoBehaviour
+namespace Scripts
 {
-    public float speed = 5f;
-    public float jumpForce = 5f;
+    /*Esta clase controlara los inputs que realice el jugador*/
+    public class PlayerController : MonoBehaviour
+{
 
-    private Rigidbody rb;
-    private bool isGrounded;
+    [SerializeField] private Animator playerAnimator;
+    [SerializeField] private FirstPersonMovement playerMovement;
+    /*Creamos un weapon inicial para tenerlo como base y una lista donde iremos intercambiando las armas*/
+    [SerializeField] private Weapon currentWeapon;
+    [SerializeField] private List<Weapon> listWeapons = new List<Weapon>();
+    private bool isWalk;
+    private int currentindex = 0;
 
-    private PlayerInput playerInput;
-    private Vector2 moveInput;
-
-    void Awake()
+    private void Update()
     {
-        rb = GetComponent<Rigidbody>();
-        playerInput = GetComponent<PlayerInput>();
+        InputMove();
+        InputChangeWeapon();
+        InputAttack();
+    }
+    /*Detecta los movimientos por teclado WASD o Flechas direccion, para mandar la direccion en la que se desplaza*/
+    private void InputMove()
+    {
+        float movX = Input.GetAxis("Horizontal");
+        float movZ = Input.GetAxis("Vertical");
+        playerMovement.SetDirection(movX, movZ);
+        if (movX != 0 || movZ != 0)
+        {
+            isWalk = true;
+        }
+        else
+        {
+            isWalk = false;
+        }
+        playerAnimator.SetBool("Walk", isWalk);
     }
 
-    void Update()
+    /*Detecta el ataque segun el arma actual que tiene el juegador*/
+    private void InputAttack()
     {
-        if (playerInput != null && playerInput.actions != null)
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
         {
-            var moveAction = playerInput.actions.FindAction("Move", throwIfNotFound: false);
-            if (moveAction != null)
-                moveInput = moveAction.ReadValue<Vector2>();
+            currentWeapon.StartAttack();
         }
     }
-
-    void FixedUpdate()
+    /*Detecta los cambios de armas segun el orden que se necesite, teclas o scroll*/
+    private void InputChangeWeapon()
     {
-        if (Camera.main != null)
-        {
-            Vector3 camForward = Camera.main.transform.forward;
-            Vector3 camRight = Camera.main.transform.right;
-
-            camForward.y = 0;
-            camRight.y = 0;
-            camForward.Normalize();
-            camRight.Normalize();
-
-            Vector3 move = (camForward * moveInput.y + camRight * moveInput.x) * speed;
-            rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
-        }
+        InputByKeys();
+        InputByScroll();
+        currentWeapon = ChangeWeapon();
     }
 
-    void LateUpdate()
+    /*Detecta el scroll del mouse incrementando o decrementando el valor del currentIndex, que es el que usamos para
+     *identificar que armar esta actualmente segun la lista.
+     *Tambien controlamos los limites que contiene volviendo al inicio o al final dependiendo al limite maximo y minimo
+     */
+    private void InputByScroll()
     {
-        if (playerInput != null && playerInput.actions != null)
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll != 0)
         {
-            var jumpAction = playerInput.actions.FindAction("Jump", throwIfNotFound: false);
-            if (jumpAction != null && jumpAction.triggered && isGrounded)
+            currentindex += (int)Mathf.Sign(scroll);
+            /*Maximo*/
+            if (currentindex >= listWeapons.Count)
             {
-                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-                isGrounded = false;
+                currentindex = 0;
+            }
+            /*Minimo*/
+            if (currentindex < 0)
+            {
+                currentindex = listWeapons.Count - 1;
             }
         }
     }
-
-    void OnCollisionEnter(Collision col)
+    /*Detecta los cambio por teclado 1 2 3 cada uno con un indice respectivo*/
+    private void InputByKeys()
     {
-        // Asegúrate de ponerle el Tag "Ground" al piso en Unity
-        if (col.gameObject.CompareTag("Ground"))
-            isGrounded = true;
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            currentindex = 0;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            currentindex = 1;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            currentindex = 2;
+        }
     }
+    /*Cambia el arma y devuelve la que usara el usuario dependiendo del currentIndex que es nuestro indice
+     *Tambien controlamos los limites para que no exista o se intente acceder a un indice no deseado
+     */
+    private Weapon ChangeWeapon()
+    {
+        if(currentindex >= listWeapons.Count)
+        {
+            currentindex = listWeapons.Count - 1;
+        }
+
+        if(currentindex < 0)
+        {
+            currentindex = 0;
+        }
+
+        for (int i = 0; i < listWeapons.Count; i++)
+        {
+            bool isActive = i == currentindex;
+            listWeapons[i].gameObject.SetActive(isActive);
+        }
+
+        return listWeapons[currentindex];
+    }
+}
 }

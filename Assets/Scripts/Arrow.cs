@@ -1,42 +1,48 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
-    private Rigidbody rb;
-
-    void Awake()
+    [SerializeField] private float velocity;
+    private int arrowDamage;
+    private string targetTodamage = "Enemy";
+    /*Apenas empieza y para que no vea muchos objeto en escena lo borramos despues de 5 segundos, ya que se desplazara
+     *casi infinitamente o hasta que choque con un enemigo
+     */
+    private void Start()
     {
-        rb = GetComponent<Rigidbody>();
-    }
-/// <summary>
-/// //
-/// </summary>
-    void Update()
-    {
-        // Flecha se orienta hacia donde se mueve
-        if (rb != null && rb.linearVelocity.sqrMagnitude > 0.1f)
-        {
-            transform.forward = rb.linearVelocity.normalized;
-        }
+        Destroy(gameObject, 5f);
     }
 
-    void OnCollisionEnter(Collision collision)
+    private void Update()
     {
-        // Detenemos la flecha clavándola
-        if (rb != null)
+        MoveArrow();
+    }
+    /*Inicializamos la flecha asignandole un nuevo daño y un objetivo*/
+    public void InitArrow(int damage, string target)
+    {
+        arrowDamage = damage;
+        targetTodamage = target;
+    }
+    /*Desplaza la flecha segun su direccion dada al ser creado*/
+    public void MoveArrow()
+    {
+        Vector3 direction = transform.forward * velocity * Time.deltaTime;
+        transform.Translate(direction);
+    }
+    /*Detectamos al enemigo mediante un tag="Enemy", asu vez para evitar errores corroboramos que tenga el script Health
+     *para quitarle vida
+     */
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(targetTodamage))
         {
-            rb.isKinematic = true; // la "pega" en el objeto
-            rb.linearVelocity = Vector3.zero;
+            Health healthTarget = other.GetComponent<Health>();
+            if (healthTarget != null)
+            {
+                healthTarget.DecrementHealth(arrowDamage);
+                Debug.Log("Damage: " + arrowDamage + " with arrow");
+                Destroy(gameObject);
+            }
         }
-
-        // Si golpea a un enemigo
-        Enemy enemy = collision.collider.GetComponent<Enemy>();
-        if (enemy != null)
-        {
-            enemy.TakeDamage(10); // daño configurable
-        }
-
-        // Destruir después de 1 segundos
-        Destroy(gameObject, 1f);
     }
 }

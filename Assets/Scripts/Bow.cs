@@ -1,30 +1,26 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Bow : MonoBehaviour, IWeapon
+namespace Scripts
 {
-    public GameObject arrowPrefab; // Prefab de la flecha
-    public Transform shootPoint;   // Punto de salida de la flecha
-    public float shootForce = 20f; // Fuerza de disparo
-
-    public void Use()
+    /*El Bow hereda de Weapon, las caracteristicas principales*/
+    public class Bow : Weapon
     {
-        if (arrowPrefab == null || shootPoint == null)
+        [SerializeField] private Arrow arrowPrefab;
+        [SerializeField] private Transform pointer;
+        
+        /*Se sobre escribe el metodo atacar para realizar el disparo*/
+        public override void Attack()
         {
-            Debug.LogWarning("⚠️ Falta asignar arrowPrefab o shootPoint en el Inspector.");
-            return;
+            base.Attack();
+            CreateArrow();
         }
 
-        // Instanciamos la flecha usando la rotación del prefab + la dirección del shootPoint
-        GameObject arrowObj = GameObject.Instantiate(arrowPrefab, shootPoint.position, shootPoint.rotation);
-        Rigidbody rb = arrowObj.GetComponent<Rigidbody>();
-
-        if (rb != null)
+        /*Crea y configura la flecha, desde la posición y la rotacion al puntero que se tiene como referencia a donde se quiere disparar*/
+        public void CreateArrow()
         {
-            rb.isKinematic = false;
-            rb.useGravity = true;
-            rb.AddForce(shootPoint.forward * shootForce, ForceMode.Impulse);
+            Arrow newArrow = Instantiate(arrowPrefab, transform.position, Quaternion.identity);
+            newArrow.transform.LookAt(pointer);
+            newArrow.InitArrow(damage, target);
         }
-
-        Debug.Log("🏹 Flecha disparada!");
     }
 }

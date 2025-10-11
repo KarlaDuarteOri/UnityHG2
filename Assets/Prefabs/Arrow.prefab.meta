@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Prefabs/HUDCanvas.prefab.meta
+guid: 9a631a23890f10b41afb1d0597cec4ad
+========
+guid: 61450cc68190eb34aab57df2c9cc1b92
+>>>>>>>> JUEG-36-Implementar-arco-con-flechas:Assets/Prefabs/Arrow.prefab.meta
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
