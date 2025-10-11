@@ -17,6 +17,15 @@ public class PlayerCombat : NetworkBehaviour
         healthRegeneration = GetComponent<HealthRegeneration>();
     }
 
+    void Update()
+    {
+        if (HasStateAuthority && Input.GetKeyDown(KeyCode.T))
+        {
+            TakeDamage(10);
+            Debug.Log("TEST: Aplicando 10 de daño");
+        }
+    }
+
 
     public void TakeDamage(int damageAmount)
     {

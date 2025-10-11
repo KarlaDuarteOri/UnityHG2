@@ -10,6 +10,7 @@ public class PlayerHUD : MonoBehaviour
     [SerializeField] private TextMeshProUGUI healthText;
     [SerializeField] private TextMeshProUGUI shieldText;
     [SerializeField] private Image healthFill; 
+    [SerializeField] private Image shieldFill;
 
     [Header("Animación")]
     [SerializeField] private float smoothSpeed = 5f; 
@@ -32,7 +33,9 @@ public class PlayerHUD : MonoBehaviour
         if (shieldText == null)
             shieldText = GameObject.Find("ShieldText")?.GetComponent<TextMeshProUGUI>();
         if (healthFill == null)
-            healthFill = GameObject.Find("Fill")?.GetComponent<Image>();
+            healthFill = GameObject.Find("HealthFill")?.GetComponent<Image>();
+        if (shieldFill == null)
+            shieldFill = GameObject.Find("ShieldFill")?.GetComponent<Image>();   
             
         currentHealthDisplay = 0f;
         currentShieldDisplay = 0f;
@@ -125,13 +128,18 @@ public class PlayerHUD : MonoBehaviour
         if (healthFill != null)
         {
             float healthPercent = healthBar.value / healthBar.maxValue;
-            
+
             if (healthPercent > 0.6f)
                 healthFill.color = Color.green;
             else if (healthPercent > 0.3f)
                 healthFill.color = Color.yellow;
             else
                 healthFill.color = Color.red;
+        }
+        
+        if (shieldFill != null)
+        {
+            shieldFill.color = Color.blue;
         }
     }
 
