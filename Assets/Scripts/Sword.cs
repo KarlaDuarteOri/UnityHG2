@@ -1,26 +1,33 @@
-using UnityEngine;
-using UnityEngine.InputSystem;
+﻿using UnityEngine;
 
-public class Sword : MonoBehaviour, IWeapon
+namespace Scripts
 {
-    public int damage = 10;
-    public float range = 2f;
-
-    public void Use()
+    /*La espada hereda de Weapon*/
+    public class Sword : Weapon
     {
-        // Disparo un rayo desde la posición del jugador hacia adelante
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, range))
+        [SerializeField] private Animator swordAnimator;
+        
+        /*Sobreescribimos la clase ataque y lo realizamos mediante una animacion*/
+        public override void Attack()
         {
-            if (hit.collider.CompareTag("Enemy"))
+        base.Attack();
+        if(swordAnimator != null)
+        {
+            swordAnimator.SetTrigger("Attack");
+        }
+    }
+    /*Utilizamos el trigger para poder detectar cuando el ataque le llega al enemigo, por se de corto alcance*/
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(target))
+        {
+            Health healthTarget = other.GetComponent<Health>();
+            if (healthTarget != null)
             {
-                Enemy enemy = hit.collider.GetComponent<Enemy>();
-                if (enemy != null)
-                {
-                    enemy.TakeDamage(damage);
-                    Debug.Log("⚔️ Espada golpeó al enemigo!");
-                }
+                healthTarget.DecrementHealth(damage);
+                Debug.Log("Damage: " + damage + " with " + nameWeapon);
             }
         }
     }
+}
 }
