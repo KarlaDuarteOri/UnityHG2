@@ -44,7 +44,7 @@ public class AlivePlayersCounter : NetworkBehaviour
         if (alivePlayersText != null)
         {
             //alivePlayersText.text = aliveCount.ToString();
-            alivePlayersText.text = $"Alive: {aliveCount}";
+            alivePlayersText.text = $"Vivos: {aliveCount}";
             // o en texto
         }
     }
