@@ -6,6 +6,7 @@ TagManager:
   tags:
   - CinemachineTarget
   - Chest
+  - HUD
   layers:
   - Default
   - TransparentFX

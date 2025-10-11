@@ -19,6 +19,10 @@ public class NetworkPlayer : NetworkBehaviour
     [Networked] private Quaternion networkRotation { get; set; }
     [Networked] private bool isGrounded { get; set; }
 
+    [Header("HUD")]
+    [SerializeField] private GameObject hudPrefab;
+    [SerializeField] private Canvas hudCanvas;
+
     private Vector3 velocity;
     private float gravity = -9.81f;
 
@@ -47,6 +51,8 @@ public class NetworkPlayer : NetworkBehaviour
             {
                 renderer.material.color = Color.green;
             }
+            GameObject hudInstance = Instantiate(hudPrefab);
+            hudCanvas = hudInstance.GetComponent<Canvas>();
         }
         else
         {
