@@ -9,7 +9,6 @@ public class NetworkPlayer : NetworkBehaviour
     [SerializeField] private float jumpForce = 3f;
 
     [Header("Ground Check")]
-    [SerializeField] private float groundCheckDistance = 0.1f;
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Components")]

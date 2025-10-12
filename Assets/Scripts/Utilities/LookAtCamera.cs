@@ -2,7 +2,7 @@
 
 public class LookAtCamera : MonoBehaviour
 {
-    [SerializeField] private Camera camera;
+    [SerializeField] private new Camera camera;
 
     private void Start()
     {
