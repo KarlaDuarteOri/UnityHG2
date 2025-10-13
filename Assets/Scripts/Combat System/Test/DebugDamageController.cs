@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 //Clase de prueba para verificar que el daño se aplique correctamente, 
 //hace daño al jugador al presionar la tecla T, debo quitarla después
-//Este puede controlar también la parte del daño 1.5 por headshot
+
 
 public class DebugDamageController : MonoBehaviour
 {

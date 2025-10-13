@@ -18,6 +18,13 @@ public class NetworkPlayer : NetworkBehaviour
 
     [Networked] private NetworkButtons previousButtons { get; set; }
     [Networked] private float cameraPitch { get; set; }
+    
+    [Header("HUD")]
+    [SerializeField] private GameObject hudPrefab;
+    [SerializeField] private Canvas hudCanvas;
+
+    private Vector3 velocity;
+    private float gravity = -9.81f;
 
     private void Awake()
     {
@@ -42,6 +49,8 @@ public class NetworkPlayer : NetworkBehaviour
             {
                 renderer.material.color = Color.green;
             }
+            GameObject hudInstance = Instantiate(hudPrefab);
+            hudCanvas = hudInstance.GetComponent<Canvas>();
         }
         else
         {
