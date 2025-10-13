@@ -168,20 +168,14 @@ public class MainMenuController : MonoBehaviour
 
     private void OnPlayClicked()
     {
-        Debug.Log($"[MainMenu] Play button clicked! Player name: {playerNameField.value}");
-
-        // Validate player name
         if (string.IsNullOrWhiteSpace(playerNameField.value))
         {
-            Debug.LogWarning("[MainMenu] Player name is empty!");
             playerNameField.value = "Player";
         }
 
-        // Save player name before opening multiplayer panel
         PlayerPrefs.SetString("PlayerName", playerNameField.value);
         PlayerPrefs.Save();
 
-        // Show Host/Join panel with choice screen
         hostJoinPanel.style.display = DisplayStyle.Flex;
         hostJoinChoice.style.display = DisplayStyle.Flex;
         joinRoomScreen.style.display = DisplayStyle.None;
@@ -201,7 +195,6 @@ public class MainMenuController : MonoBehaviour
     {
         connectionStatus.text = "Starting host...";
 
-        // Create NetworkRunner if it doesn't exist
         if (networkHandler == null)
         {
             if (networkRunnerPrefab != null)
@@ -211,20 +204,13 @@ public class MainMenuController : MonoBehaviour
             }
             else
             {
-                Debug.LogError("[MainMenu] NetworkRunner prefab not assigned!");
                 connectionStatus.text = "Error: Network not configured!";
                 return;
             }
         }
 
-        // Generate a random room code
         string roomCode = GenerateRoomCode();
-        Debug.Log($"[MainMenu] Starting as Host with room code: {roomCode}");
-
-        // Start hosting and show lobby panel
         networkHandler.StartAsHost(roomCode);
-
-        // Show lobby panel
         ShowLobby(roomCode, true);
     }
 
@@ -247,7 +233,6 @@ public class MainMenuController : MonoBehaviour
         }
         connectionStatus.text = "Joining room...";
 
-        // Create NetworkRunner if it doesn't exist
         if (networkHandler == null)
         {
             if (networkRunnerPrefab != null)
@@ -257,17 +242,13 @@ public class MainMenuController : MonoBehaviour
             }
             else
             {
-                Debug.LogError("[MainMenu] NetworkRunner prefab not assigned!");
                 connectionStatus.text = "Error: Network not configured!";
                 return;
             }
         }
 
-        // Join room and get room code back
         string roomCode = roomCodeField.value.ToUpper();
         networkHandler.StartAsClient(roomCode);
-
-        // Show lobby panel (not host, so no START GAME button)
         ShowLobby(roomCode, false);
     }
 
@@ -372,7 +353,6 @@ public class MainMenuController : MonoBehaviour
 
     private System.Collections.IEnumerator WaitForConnection()
     {
-        // Wait up to 10 seconds for connection
         float timeout = 10f;
         float elapsed = 0f;
 
@@ -380,18 +360,13 @@ public class MainMenuController : MonoBehaviour
         {
             if (networkHandler != null && networkHandler.IsConnected())
             {
-                // Connected! Enable the button
                 startGameButton.SetEnabled(true);
-                Debug.Log("[MainMenu] Connection ready - START GAME button enabled");
                 yield break;
             }
 
             elapsed += 0.1f;
             yield return new WaitForSeconds(0.1f);
         }
-
-        // Timeout - show error
-        Debug.LogError("[MainMenu] Connection timeout! Could not connect to Photon servers.");
     }
 
     public void UpdatePlayerList(List<string> playerNames)
@@ -429,8 +404,6 @@ public class MainMenuController : MonoBehaviour
 
     private void OnStartGameClicked()
     {
-        // Game auto-starts when hosting, this button won't actually be used
-        Debug.Log("[MainMenu] Start game clicked (game already started)");
     }
 
     private void OnCloseLobbyClicked()
