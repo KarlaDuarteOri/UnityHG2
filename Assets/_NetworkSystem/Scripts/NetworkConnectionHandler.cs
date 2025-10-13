@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,25 +14,19 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
 
     [Header("Player Settings")]
     [SerializeField] private NetworkPrefabRef playerPrefab;
-    
-    [Header("Session Settings")]
-    [SerializeField] private string sessionName = "MiSalaDeJuego";
-    [SerializeField] private int maxPlayers = 10;
 
-    [Header("UI References")]
-    [SerializeField] private GameObject lobbyPanel;
-    [SerializeField] private GameObject loadingPanel;
-    [SerializeField] private TMPro.TextMeshProUGUI statusText;
+    [Header("Session Settings")]
+    [SerializeField] private string sessionName = "HungerGamesRoom";
+    [SerializeField] private int maxPlayers = 12;
+
+    [Header("Scene Settings")]
+    [SerializeField] private string gameSceneName = "GameScene";  // Scene to load when game starts
 
     private void Awake()
     {
         // Asegurarse de que solo haya una instancia
         DontDestroyOnLoad(gameObject);
-    }
-
-    private void Start()
-    {
-        UpdateStatusText("Listo para conectar");
+        Debug.Log("[NetworkConnectionHandler] Ready to connect");
     }
 
     #region Public Methods - Llamados desde Botones UI
@@ -40,11 +35,16 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
     /// Inicia el juego como HOST (servidor + cliente)
     /// El host puede jugar Y controla la sesión
     /// </summary>
-    public async void StartAsHost()
+    public async void StartAsHost(string roomCode = null)
     {
         Debug.Log("=== INICIANDO COMO HOST ===");
-        UpdateStatusText("Iniciando como HOST...");
-        ShowLoading(true);
+
+        // Use custom room code if provided, otherwise use default
+        if (!string.IsNullOrEmpty(roomCode))
+        {
+            sessionName = roomCode;
+        }
+
         await StartGame(GameMode.Host);
     }
 
@@ -52,30 +52,37 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
     /// Inicia el juego como CLIENT (solo cliente)
     /// Se conecta a una sesión existente
     /// </summary>
-    public async void StartAsClient()
+    public async void StartAsClient(string roomCode)
     {
         Debug.Log("=== INICIANDO COMO CLIENT ===");
-        UpdateStatusText("Buscando sesión...");
-        ShowLoading(true);
+
+        if (string.IsNullOrEmpty(roomCode))
+        {
+            Debug.LogError("[NetworkConnectionHandler] Room code is required to join!");
+            return;
+        }
+
+        sessionName = roomCode;
         await StartGame(GameMode.Client);
     }
 
     /// <summary>
-    /// Desconectar y volver al lobby
+    /// Desconectar y volver al menu
     /// </summary>
     public async void Disconnect()
     {
         if (networkRunner != null)
         {
             Debug.Log("=== DESCONECTANDO ===");
-            UpdateStatusText("Desconectando...");
             await networkRunner.Shutdown();
             networkRunner = null;
         }
-        
-        ShowLoading(false);
-        if (lobbyPanel != null) lobbyPanel.SetActive(true);
-        UpdateStatusText("Desconectado");
+
+        // Only load MainMenu if we're not already there
+        if (SceneManager.GetActiveScene().name != "MainMenu")
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
     }
 
     #endregion
@@ -94,56 +101,71 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
         // El runner provee input solo si es Host o Client
         networkRunner.ProvideInput = (mode == GameMode.Host || mode == GameMode.Client);
 
-        // Obtener la escena actual
-        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
-        
-        Debug.Log($"Configurando juego - Modo: {mode}, Escena: {sceneIndex}, Sesión: {sessionName}");
+        // Get the game scene index
+        int gameSceneIndex = GetSceneIndex(gameSceneName);
+
+        if (gameSceneIndex == -1)
+        {
+            Debug.LogError($"[NetworkConnectionHandler] Scene '{gameSceneName}' not found in Build Settings!");
+            return;
+        }
+
+        Debug.Log($"[NetworkConnectionHandler] Starting game - Mode: {mode}, Scene: {gameSceneName} (index {gameSceneIndex}), Session: {sessionName}");
 
         // Configurar los parámetros de inicio
         var startGameArgs = new StartGameArgs()
         {
             GameMode = mode,
             SessionName = sessionName,
-            Scene = SceneRef.FromIndex(sceneIndex),
+            Scene = SceneRef.FromIndex(gameSceneIndex),
             SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>(),
             PlayerCount = maxPlayers
         };
 
         // Iniciar el juego
-        UpdateStatusText($"Conectando como {mode}...");
         var result = await networkRunner.StartGame(startGameArgs);
 
         if (result.Ok)
         {
-            Debug.Log($"✓ Juego iniciado correctamente como {mode}");
-            UpdateStatusText($"Conectado como {mode}");
-            ShowLoading(false);
-            if (lobbyPanel != null) lobbyPanel.SetActive(false);
+            Debug.Log($"✓ Game started successfully as {mode}");
+            // Scene will be loaded automatically by Fusion
         }
         else
         {
-            Debug.LogError($"✗ Error al iniciar el juego: {result.ShutdownReason}");
-            UpdateStatusText($"Error: {result.ShutdownReason}");
-            ShowLoading(false);
-            if (lobbyPanel != null) lobbyPanel.SetActive(true);
+            Debug.LogError($"✗ Failed to start game: {result.ShutdownReason}");
         }
     }
 
-    private void ShowLoading(bool show)
+    /// <summary>
+    /// Check if we're fully connected and ready to start
+    /// </summary>
+    public bool IsConnected()
     {
-        if (loadingPanel != null)
-        {
-            loadingPanel.SetActive(show);
-        }
+        return networkRunner != null && networkRunner.IsRunning;
     }
 
-    private void UpdateStatusText(string message)
+    /// <summary>
+    /// Check if this player is the host
+    /// </summary>
+    public bool IsHost()
     {
-        if (statusText != null)
+        return networkRunner != null && networkRunner.IsServer;
+    }
+
+    private int GetSceneIndex(string sceneName)
+    {
+        // Find scene index in build settings by name
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
         {
-            statusText.text = message;
+            string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+            string sceneNameFromPath = System.IO.Path.GetFileNameWithoutExtension(scenePath);
+
+            if (sceneNameFromPath == sceneName)
+            {
+                return i;
+            }
         }
-        Debug.Log($"[Status] {message}");
+        return -1;  // Not found
     }
 
     #endregion
@@ -152,67 +174,57 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"✓ Jugador {player.PlayerId} se unió a la sesión");
-        UpdateStatusText($"Jugador {player.PlayerId} entró");
+        Debug.Log($"✓ Player {player.PlayerId} joined the session");
 
         // Solo el servidor/host spawna jugadores
         if (runner.IsServer && playerPrefab != null)
         {
             // Calcular posición de spawn
             Vector3 spawnPosition = GetSpawnPosition(player.PlayerId);
-            
+
             Debug.Log($"Spawneando jugador {player.PlayerId} en posición {spawnPosition}");
-            
+
             // Spawn del jugador
             NetworkObject networkPlayer = runner.Spawn(
-                playerPrefab, 
-                spawnPosition, 
-                Quaternion.identity, 
+                playerPrefab,
+                spawnPosition,
+                Quaternion.identity,
                 player
             );
-            
+
             Debug.Log($"✓ Jugador spawneado: {networkPlayer.name}");
         }
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        Debug.Log($"✗ Jugador {player.PlayerId} dejó la sesión");
-        UpdateStatusText($"Jugador {player.PlayerId} salió");
+        Debug.Log($"✗ Player {player.PlayerId} left the session");
     }
 
     public void OnConnectedToServer(NetworkRunner runner)
     {
-        Debug.Log("✓ Conectado al servidor exitosamente");
-        UpdateStatusText("Conectado al servidor");
+        Debug.Log("✓ Connected to server successfully");
     }
 
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
     {
         Debug.LogWarning($"✗ Desconectado del servidor. Razón: {reason}");
-        UpdateStatusText($"Desconectado: {reason}");
-        ShowLoading(false);
-        if (lobbyPanel != null) lobbyPanel.SetActive(true);
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
     {
         Debug.LogError($"✗ Falló la conexión. Razón: {reason}");
-        UpdateStatusText($"Conexión fallida: {reason}");
-        ShowLoading(false);
-        if (lobbyPanel != null) lobbyPanel.SetActive(true);
     }
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
         Debug.Log($"NetworkRunner apagado. Razón: {shutdownReason}");
-        UpdateStatusText("Desconectado");
         networkRunner = null;
     }
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        // El input se maneja en el script del jugador
+        // El input se maneja en FusionInputProvider
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
