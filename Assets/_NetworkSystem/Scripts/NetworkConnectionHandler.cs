@@ -463,10 +463,10 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
         // Spawns en círculo alrededor del origen
         float angle = playerId * (360f / maxPlayers);
         float radius = 5f;
-        
+
         float x = Mathf.Cos(angle * Mathf.Deg2Rad) * radius;
         float z = Mathf.Sin(angle * Mathf.Deg2Rad) * radius;
-        
+
         return new Vector3(x, 1f, z);
     }
 
