@@ -43,12 +43,16 @@ public class MainMenuController : MonoBehaviour
     private Button closeSettingsButton;
     private DropdownField resolutionDropdown;
     private DropdownField framerateDropdown;
+    private Toggle fullscreenToggle;
+    private Toggle fpsCounterToggle;
     private Slider masterVolumeSlider;
     private Slider mouseSensitivitySlider;
     private Slider fovSlider;
     private Label masterVolumeValue;
     private Label mouseSensitivityValue;
     private Label fovValue;
+
+    private GameSettings gameSettings;
 
     void Start()
     {
@@ -90,12 +94,22 @@ public class MainMenuController : MonoBehaviour
         closeSettingsButton = root.Q<Button>("close-settings-button");
         resolutionDropdown = root.Q<DropdownField>("resolution-dropdown");
         framerateDropdown = root.Q<DropdownField>("framerate-dropdown");
+        fullscreenToggle = root.Q<Toggle>("fullscreen-toggle");
+        fpsCounterToggle = root.Q<Toggle>("fps-counter-toggle");
         masterVolumeSlider = root.Q<Slider>("master-volume-slider");
         mouseSensitivitySlider = root.Q<Slider>("mouse-sensitivity-slider");
         fovSlider = root.Q<Slider>("fov-slider");
         masterVolumeValue = root.Q<Label>("master-volume-value");
         mouseSensitivityValue = root.Q<Label>("mouse-sensitivity-value");
         fovValue = root.Q<Label>("fov-value");
+
+        // Find or create GameSettings
+        gameSettings = FindFirstObjectByType<GameSettings>();
+        if (gameSettings == null)
+        {
+            GameObject settingsObj = new GameObject("GameSettings");
+            gameSettings = settingsObj.AddComponent<GameSettings>();
+        }
 
         // Setup events and initialize
         SetupButtonEvents();
@@ -128,6 +142,14 @@ public class MainMenuController : MonoBehaviour
         masterVolumeSlider.RegisterValueChangedCallback(OnMasterVolumeChanged);
         mouseSensitivitySlider.RegisterValueChangedCallback(OnMouseSensitivityChanged);
         fovSlider.RegisterValueChangedCallback(OnFOVChanged);
+
+        // Settings toggle events
+        fullscreenToggle.RegisterValueChangedCallback(OnFullscreenChanged);
+        fpsCounterToggle.RegisterValueChangedCallback(OnFPSCounterChanged);
+
+        // Settings dropdown events
+        resolutionDropdown.RegisterValueChangedCallback(OnResolutionChanged);
+        framerateDropdown.RegisterValueChangedCallback(OnFramerateChanged);
     }
 
     private void InitializeSettingsPanel()
@@ -141,7 +163,6 @@ public class MainMenuController : MonoBehaviour
             "1024x768",
             "800x600"
         };
-        resolutionDropdown.value = "1920x1080";
 
         // Initialize Framerate dropdown
         framerateDropdown.choices = new List<string>
@@ -151,12 +172,25 @@ public class MainMenuController : MonoBehaviour
             "120",
             "Unlimited"
         };
-        framerateDropdown.value = "60";
 
-        // Initialize slider values
-        UpdateVolumeLabel(masterVolumeSlider.value);
-        UpdateMouseSensitivityLabel(mouseSensitivitySlider.value);
-        UpdateFOVLabel(fovSlider.value);
+        // Load settings from GameSettings and populate UI
+        var settings = gameSettings.GetCurrentSettings();
+
+        // Set UI values from loaded settings (without triggering change events)
+        masterVolumeSlider.SetValueWithoutNotify(settings.masterVolume);
+        UpdateVolumeLabel(settings.masterVolume);
+
+        resolutionDropdown.SetValueWithoutNotify(settings.resolution);
+        framerateDropdown.SetValueWithoutNotify(settings.framerate);
+        fullscreenToggle.SetValueWithoutNotify(settings.fullscreen);
+
+        mouseSensitivitySlider.SetValueWithoutNotify(settings.mouseSensitivity);
+        UpdateMouseSensitivityLabel(settings.mouseSensitivity);
+
+        fovSlider.SetValueWithoutNotify(settings.fieldOfView);
+        UpdateFOVLabel(settings.fieldOfView);
+
+        fpsCounterToggle.SetValueWithoutNotify(settings.showFPSCounter);
 
         // Load saved player name if exists
         string savedPlayerName = PlayerPrefs.GetString("PlayerName", "Player");
@@ -285,19 +319,39 @@ public class MainMenuController : MonoBehaviour
     private void OnMasterVolumeChanged(ChangeEvent<float> evt)
     {
         UpdateVolumeLabel(evt.newValue);
-        // TODO: Apply volume change
+        gameSettings.SetMasterVolume(evt.newValue);
     }
 
     private void OnMouseSensitivityChanged(ChangeEvent<float> evt)
     {
         UpdateMouseSensitivityLabel(evt.newValue);
-        // TODO: Apply sensitivity change
+        gameSettings.SetMouseSensitivity(evt.newValue);
     }
 
     private void OnFOVChanged(ChangeEvent<float> evt)
     {
         UpdateFOVLabel(evt.newValue);
-        // TODO: Apply FOV change
+        gameSettings.SetFieldOfView(evt.newValue);
+    }
+
+    private void OnFullscreenChanged(ChangeEvent<bool> evt)
+    {
+        gameSettings.SetFullscreen(evt.newValue);
+    }
+
+    private void OnFPSCounterChanged(ChangeEvent<bool> evt)
+    {
+        gameSettings.SetShowFPSCounter(evt.newValue);
+    }
+
+    private void OnResolutionChanged(ChangeEvent<string> evt)
+    {
+        gameSettings.SetResolution(evt.newValue);
+    }
+
+    private void OnFramerateChanged(ChangeEvent<string> evt)
+    {
+        gameSettings.SetFramerate(evt.newValue);
     }
 
     // Label update methods

@@ -58,11 +58,7 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
 
     private void Update()
     {
-        // Handle cursor lock toggle (Escape key)
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-            ToggleCursorLock();
-        }
+        // Note: ESC key pause handling is now managed by PauseMenuController
 
         // Only sample input if cursor is locked (in game)
         if (Cursor.lockState != CursorLockMode.Locked)

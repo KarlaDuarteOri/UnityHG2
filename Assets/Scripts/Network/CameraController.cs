@@ -31,6 +31,15 @@ public class CameraController : MonoBehaviour
         {
             Debug.LogError("[CameraController] No Camera component found!");
         }
+
+        // Subscribe to FOV changes
+        GameSettings.OnFOVChanged += ApplyFOV;
+    }
+
+    private void Start()
+    {
+        // Apply FOV from settings on start
+        ApplyFOV();
     }
 
     private void OnDestroy()
@@ -39,6 +48,9 @@ public class CameraController : MonoBehaviour
         {
             Instance = null;
         }
+
+        // Unsubscribe from FOV changes
+        GameSettings.OnFOVChanged -= ApplyFOV;
     }
 
     /// <summary>
@@ -65,5 +77,17 @@ public class CameraController : MonoBehaviour
         // LateUpdate ensures this happens after all player movement calculations
         transform.position = target.position;
         transform.rotation = target.rotation;
+    }
+
+    /// <summary>
+    /// Apply FOV setting from GameSettings
+    /// </summary>
+    private void ApplyFOV()
+    {
+        if (cam != null)
+        {
+            cam.fieldOfView = GameSettings.FieldOfView;
+            Debug.Log($"[CameraController] Applied FOV: {GameSettings.FieldOfView}");
+        }
     }
 }

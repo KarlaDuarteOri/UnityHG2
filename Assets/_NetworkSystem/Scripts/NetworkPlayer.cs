@@ -11,7 +11,6 @@ public class NetworkPlayer : NetworkBehaviour
 
     [Header("Camera Settings")]
     [SerializeField] private Transform cameraTarget;
-    [SerializeField] private float lookSensitivity = 0.1f;
     [SerializeField] private float maxLookAngle = 80f;
 
     private SimpleKCC kcc;
@@ -69,10 +68,13 @@ public class NetworkPlayer : NetworkBehaviour
 
     private void HandleLookRotation(NetworkInputData input)
     {
-        cameraPitch -= input.look.y * lookSensitivity;
+        // Get mouse sensitivity from settings (scale it down for better control)
+        float sensitivity = GameSettings.MouseSensitivity * 0.1f;
+
+        cameraPitch -= input.look.y * sensitivity;
         cameraPitch = Mathf.Clamp(cameraPitch, -maxLookAngle, maxLookAngle);
 
-        float yawDelta = input.look.x * lookSensitivity;
+        float yawDelta = input.look.x * sensitivity;
         kcc.AddLookRotation(0f, yawDelta);
 
         if (cameraTarget != null)
