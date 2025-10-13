@@ -17,6 +17,7 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] private NetworkPrefabRef playerPrefab;
 
     [Header("Session Settings")]
+    [Tooltip("Default Photon Fusion session name used when hosting without a custom room code.")]
     [SerializeField] private string sessionName = "HungerGamesRoom";
     [SerializeField] private int maxPlayers = 12;
 
