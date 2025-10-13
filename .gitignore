@@ -80,4 +80,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# Asset Store packages
+# Asset Store packages (can be re-downloaded from Unity Asset Store)
+/[Aa]ssets/Asset Store/
