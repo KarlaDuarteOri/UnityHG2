@@ -1,18 +1,33 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Fusion;
+using Scripts;
 
-public class Crosshair : MonoBehaviour
+//Modificar para que tenga como requisito para activarse el crosshair que el personaje tenga equipada un arma
+public class Crosshair : NetworkBehaviour
 {
     [Header("Crosshair Settings")]
     public Color crosshairColor = Color.white;
     public float size = 5f;
     public float gap = 10f;
 
-    private bool isAiming = false;
+    [Networked]
+    private bool isAiming { get; set; }
 
-    void Update()
+    //private PlayerWeaponManager weaponManager; //Cambiar este por el de Fredrick
+    private PlayerController weaponManager;
+
+    public override void Spawned()
     {
-        if (Mouse.current != null)
+        weaponManager = GetComponent <PlayerController>(); //Este también
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (!HasStateAuthority) return;
+
+        // Solo el jugador local controla el aiming, pero debe tener un arma para hacerlo
+        if (Mouse.current != null && weaponManager.GetCurrentWeapon()!=null)
         {
             isAiming = Mouse.current.rightButton.isPressed;
         }
@@ -20,7 +35,11 @@ public class Crosshair : MonoBehaviour
 
     void OnGUI()
     {
+        if (!HasStateAuthority) return;
         if (!isAiming) return;
+
+        //Verificar si el WeaponManager tiene algún arma equipada
+        // if (weaponManager != null && !weaponManager.HasWeaponEquipped()) return;
 
         Color oldColor = GUI.color;
         GUI.color = crosshairColor;
@@ -35,4 +54,13 @@ public class Crosshair : MonoBehaviour
 
         GUI.color = oldColor;
     }
+
+    public void SetAiming(bool aiming) //Esto es para forzar aiming por si implementamos algún arma que lo ocupe
+    {
+        if (HasStateAuthority)
+        {
+            isAiming = aiming;
+        }
+    }
+
 }

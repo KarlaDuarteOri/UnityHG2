@@ -1,30 +1,46 @@
+using Fusion;
 using UnityEngine;
 
-public class HealthRegeneration : MonoBehaviour
+public class HealthRegeneration : NetworkBehaviour
 {
-    private float regenDelay = 5f;
-    private int regenRate = 1;
-    private float healInterval = 0.1f; 
+    [SerializeField] private float regenDelay = 5f;
+    [SerializeField] private int regenRate = 1;
+    [SerializeField] private float healInterval = 0.1f;
 
+    [Networked]
+    private float timeSinceLastDamage { get; set; }
+    [Networked]
+    private bool isTakingDamage { get; set; }
+    [Networked]
+    private float timeSinceLastHeal { get; set; }
+
+    [Networked]
+    private TickTimer RegenTimer { get; set; }
+    
     private PlayerHealth playerHealth;
-    private float timeSinceLastDamage;  
-    private bool isTakingDamage;        
-    private float timeSinceLastHeal; 
 
-    void Start()
+    public override void Spawned()
     {
         playerHealth = GetComponent<PlayerHealth>();
-        timeSinceLastDamage = 0f;
-        timeSinceLastHeal = 0f;
+        
+        if (HasStateAuthority)
+        {
+            timeSinceLastDamage = 0f;
+            timeSinceLastHeal = 0f;
+            isTakingDamage = false;
+        }
     }
 
-    void Update()
+    public override void FixedUpdateNetwork()
     {
+        if (!HasStateAuthority) return;
+        if (!playerHealth.IsAlive) return;
+
         if (!isTakingDamage)
         {
-            timeSinceLastDamage += Time.deltaTime;
+            timeSinceLastDamage += Runner.DeltaTime;
 
-            if (timeSinceLastDamage >= regenDelay && playerHealth.GetCurrentHealth() < 100)
+            if (timeSinceLastDamage >= regenDelay && playerHealth.GetCurrentHealth() < playerHealth.GetMaxHealth())
             {
                 RegenerateHealth();
             }
@@ -35,21 +51,26 @@ public class HealthRegeneration : MonoBehaviour
     //la primer corutina va a establecer en falso el recibir daño antes de tiempo y estaría incorrecto
     public void OnDamageTaken()
     {
+        if (!HasStateAuthority) return;
+
         isTakingDamage = true;
         timeSinceLastDamage = 0f;
-        StartCoroutine(ResetDamageFlag());
+        RegenTimer = TickTimer.CreateFromSeconds(Runner, regenDelay);
     }
 
 
-    private System.Collections.IEnumerator ResetDamageFlag()
+    public override void Render()
     {
-        yield return new WaitForSeconds(regenDelay);
-        isTakingDamage = false;
+        // Verificar si el timer de regeneración expiró
+        if (HasStateAuthority && isTakingDamage && RegenTimer.Expired(Runner))
+        {
+            isTakingDamage = false;
+        }
     }
 
     private void RegenerateHealth()
     {
-        timeSinceLastHeal += Time.deltaTime;
+        timeSinceLastHeal += Runner.DeltaTime;
         
         if (timeSinceLastHeal >= healInterval)
         {

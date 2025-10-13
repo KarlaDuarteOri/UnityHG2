@@ -117,6 +117,21 @@
     scale: 0.98;
 }
 
+.tertiary-button {
+    background-color: rgb(44, 62, 80);
+    color: white;
+}
+
+.tertiary-button:hover {
+    background-color: rgb(40, 58, 76);
+    scale: 1.03;
+}
+
+.tertiary-button:active {
+    background-color: rgb(34, 48, 64);
+    scale: 0.98;
+}
+
 .settings-panel {
     position: absolute;
     width: 100%;
@@ -236,4 +251,158 @@
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     width: 60px;
     -unity-text-align: middle-center;
+}
+
+/* Overlay Panel Styles (Host/Join/Lobby) */
+.overlay-panel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    justify-content: center;
+    align-items: center;
+}
+
+.panel-container {
+    background-color: rgb(52, 73, 94);
+    border-radius: 20px;
+    border-width: 3px;
+    border-color: rgb(255, 152, 0);
+    width: 500px;
+    padding: 30px;
+    align-self: center;
+    flex-shrink: 0;
+}
+
+.panel-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.panel-title {
+    font-size: 42px;
+    color: rgb(255, 152, 0);
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    -unity-font-style: bold;
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+}
+
+.panel-header-spacer {
+    width: 40px;
+    height: 40px;
+    opacity: 0;
+    flex-shrink: 0;
+}
+
+.panel-content {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.panel-content--centered {
+    align-items: center;
+}
+
+.panel-content--centered > .section-title,
+.panel-content--centered > .status-label {
+    -unity-text-align: middle-center;
+    width: 100%;
+}
+
+.panel-content--centered > .text-input {
+    width: 100%;
+    max-width: 340px;
+}
+
+.center-action-button {
+    align-self: center;
+}
+
+.text-input {
+    height: 50px;
+    font-size: 24px;
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgba(255, 152, 0, 0.5);
+    background-color: rgba(30, 40, 50, 0.9);
+    color: white;
+    -unity-text-align: middle-center;
+}
+
+.text-input > .unity-text-field__input {
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    -unity-text-align: middle-center;
+    --unity-selection-color: rgba(255, 152, 0, 0.35);
+}
+
+.text-input > .unity-text-field__placeholder {
+    color: rgba(255, 255, 255, 0.25);
+    -unity-font-style: italic;
+}
+
+.text-input:focus {
+    border-color: rgb(255, 152, 0);
+}
+
+.status-label {
+    font-size: 16px;
+    color: yellow;
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    -unity-text-align: middle-center;
+}
+
+.room-code-label {
+    font-size: 32px;
+    color: rgb(76, 175, 80);
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    letter-spacing: 4px;
+}
+
+.player-list-scroll {
+    background-color: rgba(30, 40, 50, 0.6);
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: rgba(255, 152, 0, 0.3);
+    padding: 10px;
+}
+
+.player-list {
+    flex-direction: column;
+}
+
+.player-list-item {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(52, 73, 94, 0.8);
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    min-height: 40px;
+}
+
+.player-name-label {
+    font-size: 18px;
+    color: white;
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+}
+
+.player-host-badge {
+    font-size: 14px;
+    color: rgb(255, 152, 0);
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    -unity-font-style: bold;
+    background-color: rgba(255, 152, 0, 0.2);
+    border-radius: 5px;
+    padding: 3px 8px;
 }
