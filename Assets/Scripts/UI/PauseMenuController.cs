@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
@@ -5,8 +6,8 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 /// <summary>
-/// Controls the in-game pause menu opened with ESC key
-/// Handles Resume, Settings, and Leave Game functionality
+/// Controls the in-game pause menu opened with ESC key.
+/// Handles Resume, Settings, and Leave Game functionality.
 /// </summary>
 public class PauseMenuController : MonoBehaviour
 {
@@ -36,8 +37,17 @@ public class PauseMenuController : MonoBehaviour
     private Label fovValue;
 
     private GameSettings gameSettings;
-    private bool isPaused = false;
+    private bool isPaused;
     private NetworkConnectionHandler networkHandler;
+    private FusionInputProvider fusionInputProvider;
+
+    // Cursor management
+    private CursorLockMode targetCursorLock = CursorLockMode.Locked;
+    private bool targetCursorVisible;
+    private bool cursorTargetDirty;
+
+    public static bool IsPaused { get; private set; }
+    public static event Action<bool> PauseStateChanged;
 
     private void Awake()
     {
@@ -68,8 +78,9 @@ public class PauseMenuController : MonoBehaviour
         // Find GameSettings
         gameSettings = FindFirstObjectByType<GameSettings>();
 
-        // Find network handler
+        // Find network handler and input provider
         networkHandler = FindFirstObjectByType<NetworkConnectionHandler>();
+        fusionInputProvider = FindFirstObjectByType<FusionInputProvider>();
 
         // Setup button events
         SetupEvents();
@@ -81,9 +92,11 @@ public class PauseMenuController : MonoBehaviour
         pauseMenu.style.display = DisplayStyle.None;
         settingsPanel.style.display = DisplayStyle.None;
 
-        // Lock cursor at game start
-        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-        UnityEngine.Cursor.visible = false;
+        isPaused = false;
+        IsPaused = false;
+
+        RefreshCursorTarget();
+        ApplyCursorState();
     }
 
     private void OnEnable()
@@ -91,7 +104,6 @@ public class PauseMenuController : MonoBehaviour
         if (pauseAction != null)
         {
             pauseAction.action.performed += OnPausePerformed;
-            pauseAction.action.Enable();
         }
     }
 
@@ -100,18 +112,27 @@ public class PauseMenuController : MonoBehaviour
         if (pauseAction != null)
         {
             pauseAction.action.performed -= OnPausePerformed;
-            pauseAction.action.Disable();
         }
+
+        if (isPaused)
+        {
+            SetPaused(false);
+        }
+
+        PauseStateChanged = null;
     }
 
     private void OnPausePerformed(InputAction.CallbackContext context)
     {
+        if (!context.performed)
+        {
+            return;
+        }
+
         Debug.Log($"[PauseMenu] ESC pressed, isPaused={isPaused}");
 
-        // Toggle pause
         if (isPaused)
         {
-            // If settings is open, close settings instead of unpausing
             if (settingsPanel.style.display == DisplayStyle.Flex)
             {
                 Debug.Log("[PauseMenu] Closing settings panel");
@@ -119,19 +140,18 @@ public class PauseMenuController : MonoBehaviour
             }
             else
             {
-                Debug.Log("[PauseMenu] Calling Resume()");
-                Resume();
+                SetPaused(false);
             }
         }
         else
         {
-            Pause();
+            SetPaused(true);
         }
     }
 
     private void SetupEvents()
     {
-        resumeButton.clicked += Resume;
+        resumeButton.clicked += () => SetPaused(false);
         settingsButton.clicked += OpenSettings;
         leaveButton.clicked += LeaveGame;
         closeSettingsButton.clicked += CloseSettings;
@@ -182,49 +202,6 @@ public class PauseMenuController : MonoBehaviour
         fpsCounterToggle.SetValueWithoutNotify(settings.showFPSCounter);
     }
 
-    private void Pause()
-    {
-        isPaused = true;
-        pauseMenu.style.display = DisplayStyle.Flex;
-
-        // Unlock cursor for menu navigation
-        UnityEngine.Cursor.lockState = CursorLockMode.None;
-        UnityEngine.Cursor.visible = true;
-
-        Debug.Log("[PauseMenu] Game paused - cursor unlocked");
-
-        // Note: We don't pause time in multiplayer games
-        // Time.timeScale = 0f;
-    }
-
-    private void Resume()
-    {
-        isPaused = false;
-        pauseMenu.style.display = DisplayStyle.None;
-        settingsPanel.style.display = DisplayStyle.None;
-
-        // Lock cursor for gameplay - do this in a specific order to force Unity to comply
-        UnityEngine.Cursor.visible = false;
-        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-
-        // Force cursor to center of screen (helps with locking)
-        StartCoroutine(ForceCursorLockNextFrame());
-
-        Debug.Log("[PauseMenu] Game resumed - cursor locked");
-
-        // Time.timeScale = 1f;
-    }
-
-    private System.Collections.IEnumerator ForceCursorLockNextFrame()
-    {
-        // Wait a frame for UI to fully hide
-        yield return null;
-
-        // Force lock again to ensure it sticks
-        UnityEngine.Cursor.visible = false;
-        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-    }
-
     private void OpenSettings()
     {
         settingsPanel.style.display = DisplayStyle.Flex;
@@ -246,6 +223,94 @@ public class PauseMenuController : MonoBehaviour
 
         // Return to main menu
         SceneManager.LoadScene("MainMenu");
+    }
+
+    private void SetPaused(bool paused)
+    {
+        if (isPaused == paused)
+        {
+            return;
+        }
+
+        isPaused = paused;
+
+        pauseMenu.style.display = paused ? DisplayStyle.Flex : DisplayStyle.None;
+
+        if (!paused)
+        {
+            settingsPanel.style.display = DisplayStyle.None;
+        }
+
+        IsPaused = paused;
+        PauseStateChanged?.Invoke(paused);
+
+        RefreshCursorTarget();
+        ApplyCursorState();
+
+        EnsureFusionInputProvider();
+        fusionInputProvider?.SetInputEnabled(!paused);
+
+        Debug.Log(paused
+            ? "[PauseMenu] Game paused - cursor unlocked"
+            : "[PauseMenu] Game resumed - cursor locked");
+    }
+
+    private void EnsureFusionInputProvider()
+    {
+        if (fusionInputProvider == null)
+        {
+            fusionInputProvider = FindFirstObjectByType<FusionInputProvider>();
+        }
+    }
+
+    private void RefreshCursorTarget()
+    {
+        bool inventoryOpen = InventorySystem.Instance != null && InventorySystem.Instance.IsInventoryOpen;
+
+        CursorLockMode desiredLock;
+        bool desiredVisible;
+
+        if (isPaused)
+        {
+            desiredLock = CursorLockMode.None;
+            desiredVisible = true;
+        }
+        else if (inventoryOpen)
+        {
+            desiredLock = CursorLockMode.None;
+            desiredVisible = true;
+        }
+        else
+        {
+            desiredLock = CursorLockMode.Locked;
+            desiredVisible = false;
+        }
+
+        if (desiredLock != targetCursorLock || desiredVisible != targetCursorVisible)
+        {
+            targetCursorLock = desiredLock;
+            targetCursorVisible = desiredVisible;
+            cursorTargetDirty = true;
+        }
+    }
+
+    private void ApplyCursorState()
+    {
+        UnityEngine.Cursor.lockState = targetCursorLock;
+        UnityEngine.Cursor.visible = targetCursorVisible;
+        cursorTargetDirty = false;
+    }
+
+    private void LateUpdate()
+    {
+        RefreshCursorTarget();
+
+        if (cursorTargetDirty ||
+            UnityEngine.Cursor.lockState != targetCursorLock ||
+            UnityEngine.Cursor.visible != targetCursorVisible)
+        {
+            ApplyCursorState();
+        }
     }
 
     // Settings event handlers
@@ -300,6 +365,6 @@ public class PauseMenuController : MonoBehaviour
 
     private void UpdateFOVLabel(float value)
     {
-        fovValue.text = $"{value:F0}°";
+        fovValue.text = $"{value:F0} deg";
     }
 }

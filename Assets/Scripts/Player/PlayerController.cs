@@ -17,6 +17,13 @@ namespace Scripts
 
     private void Update()
     {
+        if (PauseMenuController.IsPaused)
+        {
+            playerMovement.SetDirection(0f, 0f);
+            playerAnimator.SetBool("Walk", false);
+            return;
+        }
+
         InputMove();
         InputChangeWeapon();
         InputAttack();
