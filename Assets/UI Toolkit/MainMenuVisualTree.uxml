@@ -36,7 +36,7 @@
                 <!-- Join Room Screen (initially hidden) -->
                 <ui:VisualElement name="join-room-screen" class="panel-content panel-content--centered" style="display: none;">
                     <ui:Label text="Enter Room Code:" class="section-title" style="margin-bottom: 10px;" />
-                    <ui:TextField name="room-code-field" placeholder-text="ABCD12" max-length="6" class="text-input" style="margin-bottom: 15px; font-size: 24px; text-align: center;" />
+                    <ui:TextField name="room-code-field" value="" max-length="6" class="text-input" style="margin-bottom: 15px; font-size: 24px; text-align: center; -unity-text-align: middle-center;" />
                     <ui:Button name="join-room-button" text="JOIN ROOM" class="menu-button primary-button" style="margin-bottom: 15px;" />
                     <ui:Button name="back-to-choice-button" text="BACK" class="menu-button tertiary-button" />
                     <ui:Label name="connection-status" text="" class="status-label" style="margin-top: 15px; color: yellow;" />
