@@ -11,10 +11,10 @@ public class NetworkPlayer : NetworkBehaviour
 
     [Header("Camera Settings")]
     [SerializeField] private Transform cameraTarget;
-    [SerializeField] private float lookSensitivity = 0.1f;
     [SerializeField] private float maxLookAngle = 80f;
 
     private SimpleKCC kcc;
+    private bool cameraAttached;
 
     [Networked] private NetworkButtons previousButtons { get; set; }
     [Networked] private float cameraPitch { get; set; }
@@ -37,12 +37,9 @@ public class NetworkPlayer : NetworkBehaviour
 
     public override void Spawned()
     {
-        if (HasStateAuthority)
+        if (Object.HasInputAuthority)
         {
-            if (cameraTarget != null && CameraController.Instance != null)
-            {
-                CameraController.Instance.SetTarget(cameraTarget);
-            }
+            TryAttachCamera();
 
             Renderer renderer = GetComponentInChildren<Renderer>();
             if (renderer != null)
@@ -69,7 +66,13 @@ public class NetworkPlayer : NetworkBehaviour
         if (!GetInput<NetworkInputData>(out var input))
             return;
 
-        if (HasStateAuthority)
+        if (Object.HasInputAuthority)
+        {
+            TryAttachCamera();
+            HandleLookRotation(input);
+            HandleMovement(input);
+        }
+        else if (HasStateAuthority)
         {
             HandleLookRotation(input);
             HandleMovement(input);
@@ -78,10 +81,13 @@ public class NetworkPlayer : NetworkBehaviour
 
     private void HandleLookRotation(NetworkInputData input)
     {
-        cameraPitch -= input.look.y * lookSensitivity;
+        // Get mouse sensitivity from settings (scale it down for better control)
+        float sensitivity = GameSettings.MouseSensitivity * 0.1f;
+
+        cameraPitch -= input.look.y * sensitivity;
         cameraPitch = Mathf.Clamp(cameraPitch, -maxLookAngle, maxLookAngle);
 
-        float yawDelta = input.look.x * lookSensitivity;
+        float yawDelta = input.look.x * sensitivity;
         kcc.AddLookRotation(0f, yawDelta);
 
         if (cameraTarget != null)
@@ -115,5 +121,31 @@ public class NetworkPlayer : NetworkBehaviour
 
     public override void Render()
     {
+        if (Object.HasInputAuthority)
+        {
+            TryAttachCamera();
+        }
+    }
+
+    private void TryAttachCamera()
+    {
+        if (cameraAttached)
+        {
+            return;
+        }
+
+        if (cameraTarget == null)
+        {
+            return;
+        }
+
+        var controller = CameraController.EnsureInstance();
+        if (controller == null)
+        {
+            return;
+        }
+
+        controller.SetTarget(cameraTarget);
+        cameraAttached = true;
     }
 }

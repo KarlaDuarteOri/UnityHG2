@@ -14,6 +14,8 @@ public class InventorySystem : MonoBehaviour
 
     public static InventorySystem Instance;
 
+    public bool IsInventoryOpen => isInventoryOpen;
+
     void Awake()
     {
         Instance = this;

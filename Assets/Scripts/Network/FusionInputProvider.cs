@@ -27,6 +27,7 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
     private bool crouchPressed = false;
     private bool attackPressed = false;
     private bool interactPressed = false;
+    private bool inputEnabled = true;
 
     private void Awake()
     {
@@ -58,15 +59,18 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
 
     private void Update()
     {
-        // Handle cursor lock toggle (Escape key)
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        // Note: ESC key pause handling is now managed by PauseMenuController
+
+        if (!inputEnabled)
         {
-            ToggleCursorLock();
+            ClearAccumulatedInput();
+            return;
         }
 
         // Only sample input if cursor is locked (in game)
         if (Cursor.lockState != CursorLockMode.Locked)
         {
+            ClearAccumulatedInput();
             return;
         }
 
@@ -114,6 +118,12 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
+        if (!inputEnabled)
+        {
+            input.Set(new NetworkInputData());
+            return;
+        }
+
         // This is called by Fusion every tick to get input data
         var data = new NetworkInputData
         {
@@ -187,6 +197,27 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
             Cursor.visible = true;
             Debug.Log("[FusionInputProvider] Cursor unlocked");
         }
+    }
+
+    public void SetInputEnabled(bool enabled)
+    {
+        inputEnabled = enabled;
+
+        if (!inputEnabled)
+        {
+            ClearAccumulatedInput();
+        }
+    }
+
+    private void ClearAccumulatedInput()
+    {
+        accumulatedInput = default;
+        resetInput = false;
+        jumpPressed = false;
+        crouchPressed = false;
+        attackPressed = false;
+        interactPressed = false;
+        sprintHeld = false;
     }
 
     #region INetworkRunnerCallbacks - Empty implementations
