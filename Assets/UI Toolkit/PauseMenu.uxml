@@ -17,7 +17,7 @@
         <ui:VisualElement name="settings-container" class="settings-container">
             <ui:VisualElement name="settings-header" class="settings-header">
                 <ui:Label text="SETTINGS" name="settings-title" class="settings-title" />
-                <ui:Button name="close-pause-settings-button" text="✕" class="close-button" />
+                <ui:Button name="close-pause-settings-button" text="X" class="close-button" />
             </ui:VisualElement>
 
             <ui:ScrollView name="settings-content" class="settings-content">
