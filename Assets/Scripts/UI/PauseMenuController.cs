@@ -212,6 +212,10 @@ public class PauseMenuController : MonoBehaviour
 
     private void LeaveGame()
     {
+        // Ensure pause/input state is cleared and cursor unlocked before leaving the session
+        SetPaused(false);
+        ForceCursorForMenu();
+
         // Disconnect from network
         if (networkHandler != null)
         {
@@ -359,5 +363,15 @@ public class PauseMenuController : MonoBehaviour
     private void UpdateFOVLabel(float value)
     {
         fovValue.text = $"{value:F0} deg";
+    }
+
+    private void ForceCursorForMenu()
+    {
+        targetCursorLock = CursorLockMode.None;
+        targetCursorVisible = true;
+        cursorTargetDirty = false;
+
+        UnityEngine.Cursor.lockState = targetCursorLock;
+        UnityEngine.Cursor.visible = targetCursorVisible;
     }
 }

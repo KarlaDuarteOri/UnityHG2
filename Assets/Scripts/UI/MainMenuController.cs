@@ -62,6 +62,10 @@ public class MainMenuController : MonoBehaviour
         var uiDocument = GetComponent<UIDocument>();
         root = uiDocument.rootVisualElement;
 
+        // Ensure cursor is visible when returning to the main menu
+        UnityEngine.Cursor.lockState = CursorLockMode.None;
+        UnityEngine.Cursor.visible = true;
+
         // Find main menu elements
         playButton = root.Q<Button>("play-button");
         settingsButton = root.Q<Button>("settings-button");
