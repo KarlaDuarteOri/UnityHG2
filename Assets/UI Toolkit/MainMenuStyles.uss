@@ -118,17 +118,17 @@
 }
 
 .tertiary-button {
-    background-color: rgb(231, 76, 60);
+    background-color: rgb(44, 62, 80);
     color: white;
 }
 
 .tertiary-button:hover {
-    background-color: rgb(192, 57, 43);
+    background-color: rgb(40, 58, 76);
     scale: 1.03;
 }
 
 .tertiary-button:active {
-    background-color: rgb(176, 48, 36);
+    background-color: rgb(34, 48, 64);
     scale: 0.98;
 }
 
@@ -286,12 +286,40 @@
     color: rgb(255, 152, 0);
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+}
+
+.panel-header-spacer {
+    width: 40px;
+    height: 40px;
+    opacity: 0;
+    flex-shrink: 0;
 }
 
 .panel-content {
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
+}
+
+.panel-content--centered {
+    align-items: center;
+}
+
+.panel-content--centered > .section-title,
+.panel-content--centered > .status-label {
+    -unity-text-align: middle-center;
+    width: 100%;
+}
+
+.panel-content--centered > .text-input {
+    width: 100%;
+    max-width: 340px;
+}
+
+.center-action-button {
+    align-self: center;
 }
 
 .text-input {
