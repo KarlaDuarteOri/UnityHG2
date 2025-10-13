@@ -1,11 +1,12 @@
 using UnityEngine;
 using Fusion;
+using Fusion.Addons.SimpleKCC;
 
 public class NetworkPlayer : NetworkBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float jumpForce = 2.2f;  // Realistic jump height (~1 meter)
+    [SerializeField] private float jumpImpulse = 10f;  // KCC uses impulse instead of force
     [SerializeField] private float sprintMultiplier = 1.5f;
 
     [Header("Camera Settings")]
@@ -13,30 +14,18 @@ public class NetworkPlayer : NetworkBehaviour
     [SerializeField] private float lookSensitivity = 0.1f;
     [SerializeField] private float maxLookAngle = 80f;
 
-    [Header("Ground Check")]
-    [SerializeField] private LayerMask groundLayer;
-
     [Header("Components")]
-    private CharacterController characterController;
+    private SimpleKCC kcc;
 
-    [Networked] private Vector3 networkPosition { get; set; }
-    [Networked] private Quaternion networkRotation { get; set; }
-    [Networked] private bool isGrounded { get; set; }
     [Networked] private NetworkButtons previousButtons { get; set; }
-    [Networked] private Vector2 lookRotation { get; set; }  // x = pitch, y = yaw
-
-    private Vector3 velocity;
-    private float gravity = -25f;  // Earth-like gravity for realistic jump/fall
+    [Networked] private float cameraPitch { get; set; }  // Track pitch separately for camera
 
     private void Awake()
     {
-        characterController = GetComponent<CharacterController>();
-        if (characterController == null)
+        kcc = GetComponent<SimpleKCC>();
+        if (kcc == null)
         {
-            characterController = gameObject.AddComponent<CharacterController>();
-            characterController.radius = 0.5f;
-            characterController.height = 2f;
-            characterController.center = new Vector3(0, 1, 0);
+            Debug.LogError("SimpleKCC component missing on Player prefab!");
         }
     }
 
@@ -88,41 +77,26 @@ public class NetworkPlayer : NetworkBehaviour
         // Only players with state authority process input
         if (HasStateAuthority)
         {
-            // Update grounded state FIRST before any movement logic
-            isGrounded = characterController.isGrounded;
-
             HandleLookRotation(input);
             HandleMovement(input);
-            HandleGravity(input);
         }
-        else
-        {
-            // Interpolar posición para jugadores remotos (suaviza el movimiento)
-            transform.position = Vector3.Lerp(transform.position, networkPosition, Runner.DeltaTime * 10f);
-            transform.rotation = Quaternion.Lerp(transform.rotation, networkRotation, Runner.DeltaTime * 10f);
-        }
+        // KCC handles remote player interpolation automatically - no manual sync needed!
     }
 
     private void HandleLookRotation(NetworkInputData input)
     {
-        // Apply look rotation from mouse input
-        // lookRotation.x = pitch (up/down), lookRotation.y = yaw (left/right)
-        Vector2 newLookRotation = lookRotation;
-        newLookRotation.x -= input.look.y * lookSensitivity;  // Pitch (inverted Y)
-        newLookRotation.y += input.look.x * lookSensitivity;  // Yaw
+        // Update pitch for camera (up/down look)
+        cameraPitch -= input.look.y * lookSensitivity;  // Inverted Y
+        cameraPitch = Mathf.Clamp(cameraPitch, -maxLookAngle, maxLookAngle);
 
-        // Clamp pitch to prevent over-rotation
-        newLookRotation.x = Mathf.Clamp(newLookRotation.x, -maxLookAngle, maxLookAngle);
+        // Update yaw for character body (left/right rotation)
+        float yawDelta = input.look.x * lookSensitivity;
+        kcc.AddLookRotation(0f, yawDelta);  // Only add yaw to KCC
 
-        lookRotation = newLookRotation;
-
-        // Apply rotation to player body (yaw only)
-        transform.rotation = Quaternion.Euler(0f, lookRotation.y, 0f);
-
-        // Apply rotation to camera target (pitch + yaw)
+        // Apply pitch rotation to camera target
         if (cameraTarget != null)
         {
-            cameraTarget.localRotation = Quaternion.Euler(lookRotation.x, 0f, 0f);
+            cameraTarget.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
         }
     }
 
@@ -131,55 +105,30 @@ public class NetworkPlayer : NetworkBehaviour
         // Get movement input (relative to player's forward direction)
         Vector3 moveDirection = new Vector3(input.move.x, 0f, input.move.y);
 
-        if (moveDirection.magnitude > 0.1f)
+        // Apply sprint multiplier if sprint button is held
+        float currentSpeed = moveSpeed;
+        if (input.buttons.IsSet(InputButtons.Sprint))
         {
-            // Normalize to prevent faster diagonal movement
-            moveDirection = moveDirection.normalized;
-
-            // Transform to world space (relative to where player is facing)
-            moveDirection = transform.TransformDirection(moveDirection);
-
-            // Apply sprint multiplier if sprint button is held
-            float currentSpeed = moveSpeed;
-            if (input.buttons.IsSet(InputButtons.Sprint))
-            {
-                currentSpeed *= sprintMultiplier;
-            }
-
-            // Move the character
-            Vector3 move = moveDirection * currentSpeed * Runner.DeltaTime;
-            characterController.Move(move);
+            currentSpeed *= sprintMultiplier;
         }
 
+        // Transform input to world space using KCC's rotation and calculate velocity
+        Vector3 moveVelocity = kcc.TransformRotation * moveDirection * currentSpeed;
+
         // Handle jump (only if pressed this tick and grounded)
+        float jumpImpulseValue = 0f;
         var pressed = input.buttons.GetPressed(previousButtons);
-        if (pressed.IsSet(InputButtons.Jump) && isGrounded)
+        if (pressed.IsSet(InputButtons.Jump) && kcc.IsGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpForce * -2f * gravity);
+            jumpImpulseValue = jumpImpulse;
             Debug.Log("¡Saltando!");
         }
 
+        // Move the KCC (KCC handles gravity automatically!)
+        kcc.Move(moveVelocity, jumpImpulseValue);
+
         // Update previous buttons for next tick
         previousButtons = input.buttons;
-
-        // Update networked transform
-        networkPosition = transform.position;
-        networkRotation = transform.rotation;
-    }
-
-    private void HandleGravity(NetworkInputData input)
-    {
-        // Reset vertical velocity when grounded
-        if (isGrounded && velocity.y < 0)
-        {
-            velocity.y = -2f; // Pequeña fuerza para mantenerlo pegado al suelo
-        }
-
-        // Aplicar gravedad
-        velocity.y += gravity * Runner.DeltaTime;
-
-        // Aplicar velocidad vertical
-        characterController.Move(velocity * Runner.DeltaTime);
     }
 
     public override void Render()
