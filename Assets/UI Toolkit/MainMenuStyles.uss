@@ -344,7 +344,7 @@
 }
 
 .text-input > .unity-text-field__placeholder {
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.25);
     -unity-font-style: italic;
 }
 

@@ -8,6 +8,7 @@ public class MainMenuController : MonoBehaviour
     [Header("Network Settings")]
     [SerializeField] private GameObject networkRunnerPrefab;  // Assign in inspector
     private NetworkConnectionHandler networkHandler;
+    private string currentRoomCode = ""; // Track the current room code
 
     private VisualElement root;
     private Button playButton;
@@ -28,6 +29,7 @@ public class MainMenuController : MonoBehaviour
     private Button backToChoiceButton;
     private TextField roomCodeField;
     private Label connectionStatus;
+    private Label hostStatus;
 
     // Lobby Panel Elements
     private VisualElement lobbyPanel;
@@ -79,6 +81,7 @@ public class MainMenuController : MonoBehaviour
         backToChoiceButton = root.Q<Button>("back-to-choice-button");
         roomCodeField = root.Q<TextField>("room-code-field");
         connectionStatus = root.Q<Label>("connection-status");
+        hostStatus = root.Q<Label>("host-status");
 
         // Find lobby panel elements
         lobbyPanel = root.Q<VisualElement>("lobby-panel");
@@ -214,6 +217,9 @@ public class MainMenuController : MonoBehaviour
         hostJoinChoice.style.display = DisplayStyle.Flex;
         joinRoomScreen.style.display = DisplayStyle.None;
         connectionStatus.text = "";
+        hostStatus.text = "";
+        hostButton.SetEnabled(true);
+        joinButton.SetEnabled(true);
     }
 
     private void OnCloseHostJoinClicked()
@@ -223,11 +229,17 @@ public class MainMenuController : MonoBehaviour
         hostJoinChoice.style.display = DisplayStyle.Flex;
         joinRoomScreen.style.display = DisplayStyle.None;
         connectionStatus.text = "";
+        hostStatus.text = "";
+        hostButton.SetEnabled(true);
+        joinButton.SetEnabled(true);
     }
 
     private void OnHostClicked()
     {
-        connectionStatus.text = "Starting host...";
+        // Show loading state immediately
+        hostStatus.text = "Creating lobby...";
+        hostButton.SetEnabled(false);
+        joinButton.SetEnabled(false);
 
         if (networkHandler == null)
         {
@@ -235,17 +247,20 @@ public class MainMenuController : MonoBehaviour
             {
                 GameObject runnerObj = Instantiate(networkRunnerPrefab);
                 networkHandler = runnerObj.GetComponent<NetworkConnectionHandler>();
+                SetupNetworkCallbacks();
             }
             else
             {
-                connectionStatus.text = "Error: Network not configured!";
+                hostStatus.text = "Error: Network not configured!";
+                hostButton.SetEnabled(true);
+                joinButton.SetEnabled(true);
                 return;
             }
         }
 
-        string roomCode = GenerateRoomCode();
-        networkHandler.StartAsHost(roomCode);
-        ShowLobby(roomCode, true);
+        currentRoomCode = GenerateRoomCode();
+        networkHandler.StartAsHost(currentRoomCode);
+        // Don't show lobby immediately - wait for OnConnectionSuccess callback
     }
 
     private void OnJoinClicked()
@@ -265,7 +280,16 @@ public class MainMenuController : MonoBehaviour
             connectionStatus.text = "Please enter a room code!";
             return;
         }
-        connectionStatus.text = "Joining room...";
+
+        // Basic format validation (6 characters)
+        currentRoomCode = roomCodeField.value.ToUpper().Trim();
+        if (currentRoomCode.Length != 6)
+        {
+            connectionStatus.text = "Room code must be 6 characters!";
+            return;
+        }
+
+        connectionStatus.text = "Connecting to room...";
 
         if (networkHandler == null)
         {
@@ -273,6 +297,7 @@ public class MainMenuController : MonoBehaviour
             {
                 GameObject runnerObj = Instantiate(networkRunnerPrefab);
                 networkHandler = runnerObj.GetComponent<NetworkConnectionHandler>();
+                SetupNetworkCallbacks();
             }
             else
             {
@@ -281,9 +306,8 @@ public class MainMenuController : MonoBehaviour
             }
         }
 
-        string roomCode = roomCodeField.value.ToUpper();
-        networkHandler.StartAsClient(roomCode);
-        ShowLobby(roomCode, false);
+        networkHandler.StartAsClient(currentRoomCode);
+        // Don't show lobby immediately - wait for connection result via callbacks
     }
 
     private void OnBackToChoiceClicked()
@@ -292,8 +316,11 @@ public class MainMenuController : MonoBehaviour
         joinRoomScreen.style.display = DisplayStyle.None;
         hostJoinChoice.style.display = DisplayStyle.Flex;
         connectionStatus.text = "";
+        hostStatus.text = "";
         // Clear room code field
         roomCodeField.value = "";
+        hostButton.SetEnabled(true);
+        joinButton.SetEnabled(true);
     }
 
     private void OnSettingsClicked()
@@ -382,6 +409,8 @@ public class MainMenuController : MonoBehaviour
     {
         // Hide host/join panel
         hostJoinPanel.style.display = DisplayStyle.None;
+        hostButton.SetEnabled(true);
+        joinButton.SetEnabled(true);
 
         // Show lobby panel
         lobbyPanel.style.display = DisplayStyle.Flex;
@@ -458,6 +487,10 @@ public class MainMenuController : MonoBehaviour
 
     private void OnStartGameClicked()
     {
+        if (networkHandler != null)
+        {
+            networkHandler.LoadGameScene();
+        }
     }
 
     private void OnCloseLobbyClicked()
@@ -482,6 +515,9 @@ public class MainMenuController : MonoBehaviour
         hostJoinChoice.style.display = DisplayStyle.Flex;
         joinRoomScreen.style.display = DisplayStyle.None;
         connectionStatus.text = "";
+        hostStatus.text = "";
+        hostButton.SetEnabled(true);
+        joinButton.SetEnabled(true);
     }
 
     private string GenerateRoomCode()
@@ -496,5 +532,54 @@ public class MainMenuController : MonoBehaviour
         }
 
         return new string(code);
+    }
+
+    // Network callback setup
+    private void SetupNetworkCallbacks()
+    {
+        if (networkHandler == null) return;
+
+        networkHandler.OnConnectionSuccess += HandleConnectionSuccess;
+        networkHandler.OnConnectionFailed += HandleConnectionFailed;
+        networkHandler.OnPlayerListUpdated += HandlePlayerListUpdated;
+    }
+
+    private void HandleConnectionSuccess()
+    {
+        ShowLobby(currentRoomCode, networkHandler.IsHost());
+    }
+
+    private void HandleConnectionFailed(string reason)
+    {
+        // Update the appropriate status label based on which screen is visible
+        if (hostJoinChoice.style.display == DisplayStyle.Flex)
+        {
+            hostStatus.text = $"Failed: {reason}";
+            hostButton.SetEnabled(true);
+            joinButton.SetEnabled(true);
+        }
+        else
+        {
+            connectionStatus.text = $"Failed: {reason}";
+        }
+
+        // Stay on the current screen, don't show lobby
+    }
+
+    private void HandlePlayerListUpdated(List<string> playerNames)
+    {
+        UpdatePlayerList(playerNames);
+        UpdatePlayerCount(playerNames.Count, 12);
+    }
+
+    private void OnDestroy()
+    {
+        // Clean up callbacks
+        if (networkHandler != null)
+        {
+            networkHandler.OnConnectionSuccess -= HandleConnectionSuccess;
+            networkHandler.OnConnectionFailed -= HandleConnectionFailed;
+            networkHandler.OnPlayerListUpdated -= HandlePlayerListUpdated;
+        }
     }
 }

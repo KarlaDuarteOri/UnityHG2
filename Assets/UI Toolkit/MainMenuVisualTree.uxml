@@ -30,6 +30,7 @@
                     <ui:Label text="Choose an option:" class="section-title" style="margin-bottom: 20px;" />
                     <ui:Button name="host-button" text="HOST GAME" class="menu-button primary-button" style="margin-bottom: 15px;" />
                     <ui:Button name="join-button" text="JOIN GAME" class="menu-button tertiary-button" />
+                    <ui:Label name="host-status" text="" class="status-label" style="margin-top: 15px; color: yellow;" />
                 </ui:VisualElement>
 
                 <!-- Join Room Screen (initially hidden) -->
