@@ -129,13 +129,10 @@ public class PauseMenuController : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[PauseMenu] ESC pressed, isPaused={isPaused}");
-
         if (isPaused)
         {
             if (settingsPanel.style.display == DisplayStyle.Flex)
             {
-                Debug.Log("[PauseMenu] Closing settings panel");
                 CloseSettings();
             }
             else
@@ -249,10 +246,6 @@ public class PauseMenuController : MonoBehaviour
 
         EnsureFusionInputProvider();
         fusionInputProvider?.SetInputEnabled(!paused);
-
-        Debug.Log(paused
-            ? "[PauseMenu] Game paused - cursor unlocked"
-            : "[PauseMenu] Game resumed - cursor locked");
     }
 
     private void EnsureFusionInputProvider()
