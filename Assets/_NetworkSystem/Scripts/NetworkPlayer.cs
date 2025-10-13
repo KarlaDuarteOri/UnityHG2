@@ -14,6 +14,7 @@ public class NetworkPlayer : NetworkBehaviour
     [SerializeField] private float maxLookAngle = 80f;
 
     private SimpleKCC kcc;
+    private bool cameraAttached;
 
     [Networked] private NetworkButtons previousButtons { get; set; }
     [Networked] private float cameraPitch { get; set; }
@@ -29,12 +30,9 @@ public class NetworkPlayer : NetworkBehaviour
 
     public override void Spawned()
     {
-        if (HasStateAuthority)
+        if (Object.HasInputAuthority)
         {
-            if (cameraTarget != null && CameraController.Instance != null)
-            {
-                CameraController.Instance.SetTarget(cameraTarget);
-            }
+            TryAttachCamera();
 
             Renderer renderer = GetComponentInChildren<Renderer>();
             if (renderer != null)
@@ -59,7 +57,13 @@ public class NetworkPlayer : NetworkBehaviour
         if (!GetInput<NetworkInputData>(out var input))
             return;
 
-        if (HasStateAuthority)
+        if (Object.HasInputAuthority)
+        {
+            TryAttachCamera();
+            HandleLookRotation(input);
+            HandleMovement(input);
+        }
+        else if (HasStateAuthority)
         {
             HandleLookRotation(input);
             HandleMovement(input);
@@ -108,5 +112,31 @@ public class NetworkPlayer : NetworkBehaviour
 
     public override void Render()
     {
+        if (Object.HasInputAuthority)
+        {
+            TryAttachCamera();
+        }
+    }
+
+    private void TryAttachCamera()
+    {
+        if (cameraAttached)
+        {
+            return;
+        }
+
+        if (cameraTarget == null)
+        {
+            return;
+        }
+
+        var controller = CameraController.EnsureInstance();
+        if (controller == null)
+        {
+            return;
+        }
+
+        controller.SetTarget(cameraTarget);
+        cameraAttached = true;
     }
 }

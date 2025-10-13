@@ -9,30 +9,48 @@ public class CameraController : MonoBehaviour
 {
     public static CameraController Instance { get; private set; }
 
+    public static CameraController EnsureInstance()
+    {
+        if (Instance != null)
+        {
+            return Instance;
+        }
+
+        var existing = FindFirstObjectByType<CameraController>();
+        if (existing != null)
+        {
+            existing.SetupCameraComponents();
+            Instance = existing;
+            return Instance;
+        }
+
+        GameObject cameraObject = new GameObject("PlayerCamera");
+        cameraObject.tag = "MainCamera";
+        cameraObject.AddComponent<Camera>();
+        cameraObject.AddComponent<AudioListener>();
+
+        var controller = cameraObject.AddComponent<CameraController>();
+        controller.SetupCameraComponents();
+        Instance = controller;
+        return controller;
+    }
+
     private Transform target;
     private Camera cam;
 
     private void Awake()
     {
-        // Singleton pattern
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Debug.LogWarning("[CameraController] Multiple instances detected! Destroying duplicate.");
             Destroy(gameObject);
             return;
         }
 
-        cam = GetComponent<Camera>();
-        if (cam == null)
-        {
-            Debug.LogError("[CameraController] No Camera component found!");
-        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+        SetupCameraComponents();
 
-        // Subscribe to FOV changes
         GameSettings.OnFOVChanged += ApplyFOV;
     }
 
@@ -49,7 +67,6 @@ public class CameraController : MonoBehaviour
             Instance = null;
         }
 
-        // Unsubscribe from FOV changes
         GameSettings.OnFOVChanged -= ApplyFOV;
     }
 
@@ -88,6 +105,23 @@ public class CameraController : MonoBehaviour
         {
             cam.fieldOfView = GameSettings.FieldOfView;
             Debug.Log($"[CameraController] Applied FOV: {GameSettings.FieldOfView}");
+        }
+    }
+
+    private void SetupCameraComponents()
+    {
+        if (cam == null)
+        {
+            cam = GetComponent<Camera>();
+            if (cam == null)
+            {
+                cam = gameObject.AddComponent<Camera>();
+            }
+        }
+
+        if (GetComponent<AudioListener>() == null)
+        {
+            gameObject.AddComponent<AudioListener>();
         }
     }
 }

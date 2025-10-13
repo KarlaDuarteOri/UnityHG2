@@ -292,12 +292,14 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
             {
                 Vector3 spawnPosition = GetSpawnPosition(player.PlayerId);
 
-                runner.Spawn(
+                NetworkObject spawnedPlayer = runner.Spawn(
                     playerPrefab,
                     spawnPosition,
                     Quaternion.identity,
                     player
                 );
+
+                runner.SetPlayerObject(player, spawnedPlayer);
             }
         }
         else
@@ -339,6 +341,17 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
             {
                 BroadcastPlayerList();
             }
+        }
+
+        // Despawn player object if we're in a gameplay scene
+        if (runner.TryGetPlayerObject(player, out var playerObject) && playerObject != null)
+        {
+            if (runner.IsServer)
+            {
+                runner.SetPlayerObject(player, null);
+            }
+
+            runner.Despawn(playerObject);
         }
     }
 
@@ -433,7 +446,8 @@ public class NetworkConnectionHandler : MonoBehaviour, INetworkRunnerCallbacks
             }
 
             Vector3 spawnPosition = GetSpawnPosition(player.PlayerId);
-            runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
+            NetworkObject spawnedPlayer = runner.Spawn(playerPrefab, spawnPosition, Quaternion.identity, player);
+            runner.SetPlayerObject(player, spawnedPlayer);
         }
     }
     public void OnSceneLoadStart(NetworkRunner runner) { }
