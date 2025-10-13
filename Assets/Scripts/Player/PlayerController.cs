@@ -92,28 +92,33 @@ namespace Scripts
             currentindex = 2;
         }
     }
-    /*Cambia el arma y devuelve la que usara el usuario dependiendo del currentIndex que es nuestro indice
-     *Tambien controlamos los limites para que no exista o se intente acceder a un indice no deseado
-     */
-    private Weapon ChangeWeapon()
-    {
-        if(currentindex >= listWeapons.Count)
+        /*Cambia el arma y devuelve la que usara el usuario dependiendo del currentIndex que es nuestro indice
+         *Tambien controlamos los limites para que no exista o se intente acceder a un indice no deseado
+         */
+        private Weapon ChangeWeapon()
         {
-            currentindex = listWeapons.Count - 1;
+            if (currentindex >= listWeapons.Count)
+            {
+                currentindex = listWeapons.Count - 1;
+            }
+
+            if (currentindex < 0)
+            {
+                currentindex = 0;
+            }
+
+            for (int i = 0; i < listWeapons.Count; i++)
+            {
+                bool isActive = i == currentindex;
+                listWeapons[i].gameObject.SetActive(isActive);
+            }
+
+            return listWeapons[currentindex];
         }
 
-        if(currentindex < 0)
+        public Weapon GetCurrentWeapon()
         {
-            currentindex = 0;
+            return currentWeapon;
         }
-
-        for (int i = 0; i < listWeapons.Count; i++)
-        {
-            bool isActive = i == currentindex;
-            listWeapons[i].gameObject.SetActive(isActive);
-        }
-
-        return listWeapons[currentindex];
-    }
 }
 }

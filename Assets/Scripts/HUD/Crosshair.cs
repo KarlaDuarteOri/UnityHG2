@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Fusion;
+using Scripts;
 
 //Modificar para que tenga como requisito para activarse el crosshair que el personaje tenga equipada un arma
 public class Crosshair : NetworkBehaviour
@@ -13,19 +14,20 @@ public class Crosshair : NetworkBehaviour
     [Networked]
     private bool isAiming { get; set; }
 
-    private PlayerWeaponManager weaponManager; //Cambiar este por el de Fredrick
+    //private PlayerWeaponManager weaponManager; //Cambiar este por el de Fredrick
+    private PlayerController weaponManager;
 
     public override void Spawned()
     {
-        weaponManager = GetComponent <PlayerWeaponManager>(); //Este también
+        weaponManager = GetComponent <PlayerController>(); //Este también
     }
 
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority) return;
 
-        // Solo el jugador local controla el aiming
-        if (Mouse.current != null)
+        // Solo el jugador local controla el aiming, pero debe tener un arma para hacerlo
+        if (Mouse.current != null && weaponManager.GetCurrentWeapon()!=null)
         {
             isAiming = Mouse.current.rightButton.isPressed;
         }
