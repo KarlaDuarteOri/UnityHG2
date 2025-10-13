@@ -334,6 +334,20 @@
     -unity-text-align: middle-center;
 }
 
+.text-input > .unity-text-field__input {
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    -unity-text-align: middle-center;
+    --unity-selection-color: rgba(255, 152, 0, 0.35);
+}
+
+.text-input > .unity-text-field__placeholder {
+    color: rgba(255, 255, 255, 0.45);
+    -unity-font-style: italic;
+}
+
 .text-input:focus {
     border-color: rgb(255, 152, 0);
 }
