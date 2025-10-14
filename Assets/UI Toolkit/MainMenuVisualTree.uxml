@@ -20,21 +20,23 @@
         <ui:VisualElement name="host-join-panel" class="overlay-panel" style="display: none;">
             <ui:VisualElement name="panel-container" class="panel-container">
                 <ui:VisualElement name="panel-header" class="panel-header">
-                    <ui:Label text="MULTIPLAYER" class="panel-title" />
+                    <ui:VisualElement class="panel-header-spacer" />
+                    <ui:Label text="PLAY ONLINE" class="panel-title" />
                     <ui:Button name="close-host-join-button" text="✕" class="close-button" />
                 </ui:VisualElement>
 
                 <!-- Host/Join Choice Screen -->
-                <ui:VisualElement name="host-join-choice" class="panel-content">
+                <ui:VisualElement name="host-join-choice" class="panel-content panel-content--centered">
                     <ui:Label text="Choose an option:" class="section-title" style="margin-bottom: 20px;" />
                     <ui:Button name="host-button" text="HOST GAME" class="menu-button primary-button" style="margin-bottom: 15px;" />
                     <ui:Button name="join-button" text="JOIN GAME" class="menu-button tertiary-button" />
+                    <ui:Label name="host-status" text="" class="status-label" style="margin-top: 15px; color: yellow;" />
                 </ui:VisualElement>
 
                 <!-- Join Room Screen (initially hidden) -->
-                <ui:VisualElement name="join-room-screen" class="panel-content" style="display: none;">
+                <ui:VisualElement name="join-room-screen" class="panel-content panel-content--centered" style="display: none;">
                     <ui:Label text="Enter Room Code:" class="section-title" style="margin-bottom: 10px;" />
-                    <ui:TextField name="room-code-field" placeholder-text="ABCD12" max-length="6" class="text-input" style="margin-bottom: 15px; font-size: 24px; text-align: center;" />
+                    <ui:TextField name="room-code-field" value="" max-length="6" class="text-input" style="margin-bottom: 15px; font-size: 24px; text-align: center; -unity-text-align: middle-center;" />
                     <ui:Button name="join-room-button" text="JOIN ROOM" class="menu-button primary-button" style="margin-bottom: 15px;" />
                     <ui:Button name="back-to-choice-button" text="BACK" class="menu-button tertiary-button" />
                     <ui:Label name="connection-status" text="" class="status-label" style="margin-top: 15px; color: yellow;" />
@@ -46,6 +48,7 @@
         <ui:VisualElement name="lobby-panel" class="overlay-panel" style="display: none;">
             <ui:VisualElement name="lobby-container" class="panel-container">
                 <ui:VisualElement name="lobby-header" class="panel-header">
+                    <ui:VisualElement class="panel-header-spacer" />
                     <ui:Label text="LOBBY" class="panel-title" />
                     <ui:Button name="close-lobby-button" text="✕" class="close-button" />
                 </ui:VisualElement>
@@ -60,8 +63,8 @@
                         <ui:VisualElement name="player-list" class="player-list" />
                     </ui:ScrollView>
 
-                    <ui:Button name="start-game-button" text="START GAME" class="menu-button primary-button" style="margin-bottom: 10px;" />
-                    <ui:Button name="leave-lobby-button" text="LEAVE LOBBY" class="menu-button tertiary-button" />
+                    <ui:Button name="start-game-button" text="START GAME" class="menu-button primary-button center-action-button" style="margin-bottom: 10px;" />
+                    <ui:Button name="leave-lobby-button" text="LEAVE LOBBY" class="menu-button tertiary-button center-action-button" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

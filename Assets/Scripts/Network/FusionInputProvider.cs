@@ -11,9 +11,6 @@ using System;
 /// </summary>
 public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
 {
-    [Header("Input Settings")]
-    [SerializeField] private float mouseSensitivity = 1.0f;
-
     // Input Actions reference (generated from InputSystem_Actions.inputactions)
     private InputSystem_Actions controls;
 
@@ -27,6 +24,7 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
     private bool crouchPressed = false;
     private bool attackPressed = false;
     private bool interactPressed = false;
+    private bool inputEnabled = true;
 
     private void Awake()
     {
@@ -58,15 +56,18 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
 
     private void Update()
     {
-        // Handle cursor lock toggle (Escape key)
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        // Note: ESC key pause handling is now managed by PauseMenuController
+
+        if (!inputEnabled)
         {
-            ToggleCursorLock();
+            ClearAccumulatedInput();
+            return;
         }
 
         // Only sample input if cursor is locked (in game)
         if (Cursor.lockState != CursorLockMode.Locked)
         {
+            ClearAccumulatedInput();
             return;
         }
 
@@ -84,8 +85,8 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
         // Movement - Read current value every frame
         accumulatedInput.move = player.Move.ReadValue<Vector2>();
 
-        // Look - Add mouse delta each frame
-        Vector2 lookDelta = player.Look.ReadValue<Vector2>() * mouseSensitivity;
+        // Look - Add mouse delta each frame (sensitivity applied in NetworkPlayer)
+        Vector2 lookDelta = player.Look.ReadValue<Vector2>();
         accumulatedInput.look += lookDelta;
 
         // Buttons - Check state every frame
@@ -114,6 +115,12 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
+        if (!inputEnabled)
+        {
+            input.Set(new NetworkInputData());
+            return;
+        }
+
         // This is called by Fusion every tick to get input data
         var data = new NetworkInputData
         {
@@ -187,6 +194,27 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
             Cursor.visible = true;
             Debug.Log("[FusionInputProvider] Cursor unlocked");
         }
+    }
+
+    public void SetInputEnabled(bool enabled)
+    {
+        inputEnabled = enabled;
+
+        if (!inputEnabled)
+        {
+            ClearAccumulatedInput();
+        }
+    }
+
+    private void ClearAccumulatedInput()
+    {
+        accumulatedInput = default;
+        resetInput = false;
+        jumpPressed = false;
+        crouchPressed = false;
+        attackPressed = false;
+        interactPressed = false;
+        sprintHeld = false;
     }
 
     #region INetworkRunnerCallbacks - Empty implementations
