@@ -19,19 +19,21 @@ public class Item : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log($"Jugador tocó: {itemName}");
+            Debug.Log($"[ITEM] Jugador tocó: {gameObject.name}");
+            Debug.Log($"[ITEM] itemName en Inspector: '{itemName}'");
+            Debug.Log($"[ITEM] InventorySystem.Instance: {InventorySystem.Instance}");
 
-            // Intentar agregar al inventario
-            if (InventorySystem.Instance != null && InventorySystem.Instance.AddItem(this.gameObject))
+            if (InventorySystem.Instance != null)
             {
-                // Si se agregó exitosamente, esconder el objeto en escena
-                this.gameObject.SetActive(false);
-                Debug.Log($" {itemName} agregado al inventario");
-            }
-            else
-            {
-                Debug.Log("No se pudo agregar al inventario");
+                bool added = InventorySystem.Instance.AddItem(this.gameObject);
+                Debug.Log($"[ITEM] ¿Se agregó? {added}");
+
+                if (added)
+                {
+                    Destroy(this.gameObject);
+                }
             }
         }
     }
+
 }
