@@ -7,8 +7,8 @@ public class StaminaSystem : MonoBehaviour
     [Header("Stamina Settings")]
     public float maxStamina = 100f;
     public float staminaDrainRate = 25f;
-    public float staminaRegenRate = 20f;
-    public float regenDelay = 15.5f;
+    public float staminaRegenRate = 2f;
+    public float regenDelay = 4f;
 
     [Header("UI References")]
     public Slider staminaBar;
@@ -51,10 +51,10 @@ public class StaminaSystem : MonoBehaviour
 
     void HandleStamina()
     {
-        // USANDO INPUT SYSTEM - forma correcta
+        // USANDO INPUT SYSTEM 
         bool isTryingToSprint = currentKeyboard != null && currentKeyboard.leftShiftKey.isPressed;
 
-        // Para el movimiento, necesitamos una alternativa
+        // Para el movimiento
         bool isMovingForward = IsMovingForward();
 
         isSprinting = isTryingToSprint && isMovingForward && currentStamina > 0;
@@ -76,8 +76,11 @@ public class StaminaSystem : MonoBehaviour
         else if (currentStamina < maxStamina && (Time.time - lastSprintTime) > regenDelay)
         {
             // Regenerar stamina
-            currentStamina += staminaRegenRate * Time.deltaTime;
+            float slowRegenRate = staminaRegenRate / 10f;
+            currentStamina += slowRegenRate * Time.deltaTime;
             currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
+
+            Debug.Log($"Regenerando... Stamina: {currentStamina:F0}");
         }
     }
 
@@ -93,7 +96,7 @@ public class StaminaSystem : MonoBehaviour
         }
 
         // Método 2: Alternativa si no funciona lo anterior
-        // Podemos asumir que si presiona W está moviéndose hacia adelante
+        // Asumir que si presiona W está moviéndose hacia adelante
         return currentKeyboard != null && currentKeyboard.wKey.isPressed;
     }
 
