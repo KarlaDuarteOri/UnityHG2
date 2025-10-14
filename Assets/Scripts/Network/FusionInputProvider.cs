@@ -11,9 +11,6 @@ using System;
 /// </summary>
 public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
 {
-    [Header("Input Settings")]
-    [SerializeField] private float mouseSensitivity = 1.0f;
-
     // Input Actions reference (generated from InputSystem_Actions.inputactions)
     private InputSystem_Actions controls;
 
@@ -88,8 +85,8 @@ public class FusionInputProvider : SimulationBehaviour, INetworkRunnerCallbacks
         // Movement - Read current value every frame
         accumulatedInput.move = player.Move.ReadValue<Vector2>();
 
-        // Look - Add mouse delta each frame
-        Vector2 lookDelta = player.Look.ReadValue<Vector2>() * mouseSensitivity;
+        // Look - Add mouse delta each frame (sensitivity applied in NetworkPlayer)
+        Vector2 lookDelta = player.Look.ReadValue<Vector2>();
         accumulatedInput.look += lookDelta;
 
         // Buttons - Check state every frame
