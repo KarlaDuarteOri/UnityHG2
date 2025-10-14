@@ -1,4 +1,5 @@
 using Fusion;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -11,6 +12,8 @@ public class PlayerHealth : NetworkBehaviour
 
     [Networked]
     public bool IsAlive { get; set; }
+    private GameEndDetector gameEndDetector;
+    private bool hasNotifiedDeath = false;
 
     public System.Action<int, int> OnHealthChanged; //current, max
     public System.Action OnDeath;
@@ -23,6 +26,9 @@ public class PlayerHealth : NetworkBehaviour
             IsAlive = true;
             OnHealthChanged?.Invoke(currentHealth, maxHealth);
         }
+
+        if (gameEndDetector == null)
+            gameEndDetector = FindFirstObjectByType<GameEndDetector>();
     }
 
 
@@ -66,20 +72,37 @@ public class PlayerHealth : NetworkBehaviour
 
     private void Die()
     {
-        if (HasStateAuthority && IsAlive)
+        if (HasStateAuthority && IsAlive && !hasNotifiedDeath)
         {
+            hasNotifiedDeath = true;
             IsAlive = false;
             Debug.Log(gameObject.name + " ha muerto!");
-            
+
             OnDeath?.Invoke();
-            
-            // Notificar al contador de jugadores
-            AlivePlayersCounter counter = FindFirstObjectByType<AlivePlayersCounter>();
-            if (counter != null) 
-                //counter.NotifyPlayerDeath();
-            
-            gameObject.SetActive(false);
+
+            if (AlivePlayersCounter.Instance != null)
+            {
+                AlivePlayersCounter.Instance.NotifyPlayerDeath();
+                Debug.Log("Notificación enviada al contador");
+            }
+            else
+            {
+                Debug.LogError("No se encontró AlivePlayersCounter.Instance");
+            }
+
+            if (gameEndDetector != null)
+            {
+                gameEndDetector.CheckForGameEnd();
+            }
+
+            StartCoroutine(DespawnAfterDelay());
         }
+    }
+    
+    private System.Collections.IEnumerator DespawnAfterDelay()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Runner.Despawn(Object);
     }
 
     public int GetCurrentHealth()

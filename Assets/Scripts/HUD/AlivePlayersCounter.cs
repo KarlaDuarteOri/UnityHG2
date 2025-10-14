@@ -14,8 +14,18 @@ public class AlivePlayersCounter : NetworkBehaviour
 
     private ChangeDetector _changeDetector;
 
+    [Networked]
+    private int initialPlayerCount { get; set; } 
+
+    public static AlivePlayersCounter Instance { get; private set; } 
+
     public override void Spawned()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+
         if (alivePlayersText == null)
             alivePlayersText = GameObject.Find("AlivePlayersText")?.GetComponent<TextMeshProUGUI>();
 
@@ -23,7 +33,12 @@ public class AlivePlayersCounter : NetworkBehaviour
 
         if (Object.HasStateAuthority)
         {
-            aliveCount = Runner.ActivePlayers.Count();
+            
+            if (initialPlayerCount == 0)
+            {
+                initialPlayerCount = Runner.ActivePlayers.Count();
+                aliveCount = initialPlayerCount;
+            }
         }
         UpdateText();
     }
@@ -60,14 +75,7 @@ public class AlivePlayersCounter : NetworkBehaviour
 
     public void NotifyPlayerDeath()
     {
-        if (Object.HasStateAuthority)
-        {
-            RPC_ReduceAliveCount();
-        }
-        else
-        {
-            RPC_ReduceAliveCount();
-        }
+        RPC_ReduceAliveCount();
     }
 
     public int GetAliveCount()

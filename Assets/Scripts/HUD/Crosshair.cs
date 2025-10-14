@@ -19,7 +19,7 @@ public class Crosshair : NetworkBehaviour
 
     public override void Spawned()
     {
-        weaponManager = GetComponent <PlayerController>(); //Este también
+        //weaponManager = GetComponent <PlayerController>(); //Descomentar cuando se integre sistema de armas
     }
 
     public override void FixedUpdateNetwork()
@@ -27,7 +27,7 @@ public class Crosshair : NetworkBehaviour
         if (!HasStateAuthority) return;
 
         // Solo el jugador local controla el aiming, pero debe tener un arma para hacerlo
-        if (Mouse.current != null && weaponManager.GetCurrentWeapon()!=null)
+        if (Mouse.current != null) //&& weaponManager.GetCurrentWeapon()!=null) //Descomentar cuando se integre sistema de arams
         {
             isAiming = Mouse.current.rightButton.isPressed;
         }
