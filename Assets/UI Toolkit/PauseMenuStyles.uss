@@ -1,50 +1,39 @@
-/* Colors for Reference: 
-   - Dark Text/Accent: rgb(40, 40, 40)
-   - Accent Green (Border/Titles): rgb(67, 160, 71) 
-   - Light Green (Primary Button/Highlight): rgb(102, 187, 106)
-   - Panel/Container BG: rgba(220, 240, 220, 0.95) (Pale Greenish White)
-   - Pale Blue/Grey (Secondary): rgb(189, 212, 220)
-   - Soft Red (Danger): rgb(255, 120, 100)
-*/
-
 /* Pause Menu Overlay */
 .pause-overlay {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Softer backdrop */
+    background-color: rgba(0, 0, 0, 0.85);
     justify-content: center;
     align-items: center;
 }
 
 .pause-container {
-    /* Light, tinted background with a thick green border */
-    background-color: rgba(220, 240, 220, 0.95); 
-    border-radius: 25px; /* Consistent large radius */
-    border-width: 5px; /* Chunky border */
-    border-color: rgb(67, 160, 71); /* Dark Green border */
-    width: 450px;
-    padding: 50px; /* More padding */
+    background-color: rgb(52, 73, 94);
+    border-radius: 20px;
+    border-width: 3px;
+    border-color: rgb(255, 152, 0);
+    width: 400px;
+    padding: 40px;
     align-items: center;
 }
 
 .pause-title {
-    font-size: 52px;
-    color: rgb(67, 160, 71); /* Dark Green Title */
+    font-size: 48px;
+    color: rgb(255, 152, 0);
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
     -unity-text-align: middle-center;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 .pause-button {
-    height: 65px; /* Taller button */
+    height: 60px;
     width: 100%;
     margin-top: 15px;
-    border-radius: 20px; /* Consistent rounded button */
-    border-width: 4px; /* Chunky border */
-    font-size: 28px;
+    border-radius: 12px;
+    border-width: 2px;
+    font-size: 24px;
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
     transition-property: scale, background-color;
@@ -52,72 +41,68 @@
 }
 
 .primary-button {
-    /* Bright Green / Dark Text */
-    background-color: rgb(102, 187, 106); 
-    color: rgb(40, 40, 40); 
-    border-color: rgb(67, 160, 71); 
+    background-color: rgb(76, 175, 80);
+    border-color: rgb(67, 160, 71);
+    color: white;
 }
 
 .primary-button:hover {
-    background-color: rgb(129, 212, 133);
-    scale: 1.05;
+    background-color: rgb(67, 160, 71);
+    scale: 1.03;
 }
 
 .primary-button:active {
-    background-color: rgb(76, 175, 80);
+    background-color: rgb(56, 142, 60);
     scale: 0.98;
 }
 
 .secondary-button {
-    /* Pale Blue-Grey / Dark Text */
-    background-color: rgb(189, 212, 220); 
-    color: rgb(40, 40, 40); 
-    border-color: rgb(149, 165, 166);
+    background-color: rgb(149, 165, 166);
+    border-color: rgb(127, 140, 141);
+    color: white;
 }
 
 .secondary-button:hover {
-    background-color: rgb(210, 228, 235);
+    background-color: rgb(127, 140, 141);
     scale: 1.03;
 }
 
 .secondary-button:active {
-    background-color: rgb(167, 184, 190);
+    background-color: rgb(108, 122, 137);
     scale: 0.98;
 }
 
 .danger-button {
-    /* Soft Red-Orange / Dark Text */
-    background-color: rgb(255, 120, 100); 
-    color: rgb(40, 40, 40); 
-    border-color: rgb(200, 90, 80);
+    background-color: rgb(231, 76, 60);
+    border-color: rgb(192, 57, 43);
+    color: white;
 }
 
 .danger-button:hover {
-    background-color: rgb(255, 140, 120);
-    scale: 1.05;
+    background-color: rgb(192, 57, 43);
+    scale: 1.03;
 }
 
 .danger-button:active {
-    background-color: rgb(231, 76, 60);
+    background-color: rgb(169, 50, 38);
     scale: 0.98;
 }
 
-/* --- Settings Panel (Harmonized with MainMenu) --- */
+/* Settings Panel (reused styles from MainMenuStyles) */
 .settings-panel {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.9);
     justify-content: center;
     align-items: center;
 }
 
 .settings-container {
-    /* Light, tinted background with a thick green border */
-    background-color: rgba(220, 240, 220, 0.95);
-    border-radius: 25px;
-    border-width: 5px;
-    border-color: rgb(67, 160, 71);
+    background-color: rgb(52, 73, 94);
+    border-radius: 20px;
+    border-width: 3px;
+    border-color: rgb(255, 152, 0);
     width: 700px;
     max-height: 80%;
     padding: 30px;
@@ -128,12 +113,12 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .settings-title {
-    font-size: 48px;
-    color: rgb(67, 160, 71); /* Dark Green Title */
+    font-size: 42px;
+    color: rgb(255, 152, 0);
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
     flex-grow: 1;
@@ -141,21 +126,20 @@
 }
 
 .close-button {
-    /* Soft Red-Orange / White Text, Thematic Border */
-    width: 45px;
-    height: 45px;
-    background-color: rgb(255, 120, 100);
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background-color: rgb(231, 76, 60);
     color: white;
-    border-radius: 25px;
-    border-width: 3px;
-    border-color: rgb(200, 90, 80);
-    font-size: 28px;
+    font-size: 24px;
+    border-width: 2px;
+    border-color: rgb(192, 57, 43);
     -unity-font-style: bold;
 }
 
 .close-button:hover {
-    background-color: rgb(255, 140, 120);
-    scale: 1.05;
+    background-color: rgb(192, 57, 43);
+    scale: 1.1;
 }
 
 .close-button:active {
@@ -169,13 +153,13 @@
 .settings-section {
     margin-bottom: 25px;
     padding: 15px;
-    background-color: rgba(189, 212, 220, 0.3); /* Soft blue-grey tint for sections */
-    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
 }
 
 .section-title {
-    font-size: 28px;
-    color: rgb(67, 160, 71); /* Dark Green Title */
+    font-size: 24px;
+    color: rgb(255, 152, 0);
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
     margin-bottom: 10px;
@@ -186,12 +170,12 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
-    min-height: 35px;
+    min-height: 30px;
 }
 
 .setting-label {
     font-size: 18px;
-    color: rgb(40, 40, 40); /* Dark text */
+    color: white;
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     min-width: 200px;
 }
@@ -204,21 +188,16 @@
 
 .setting-value {
     font-size: 18px;
-    color: rgb(76, 175, 80); /* Solid Green Value */
+    color: rgb(255, 152, 0);
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
-    min-width: 70px;
+    min-width: 60px;
     -unity-text-align: middle-right;
 }
 
 .setting-dropdown {
     flex-grow: 1;
     max-width: 300px;
-    height: 40px;
-    background-color: rgb(200, 220, 200); /* Light green tint */
-    border-radius: 8px;
-    border-width: 2px;
-    border-color: rgb(102, 187, 106);
-    color: rgb(40, 40, 40); /* Dark text */
+    height: 35px;
     font-size: 16px;
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
 }
