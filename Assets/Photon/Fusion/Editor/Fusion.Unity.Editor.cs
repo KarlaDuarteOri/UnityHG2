@@ -5770,15 +5770,19 @@ namespace Fusion.Editor {
   using UnityEditor;
   using UnityEditor.IMGUI.Controls;
   using UnityEngine;
+
+  using TreeViewInt = UnityEditor.IMGUI.Controls.TreeView<int>;
+  using TreeViewItemInt = UnityEditor.IMGUI.Controls.TreeViewItem<int>;
+  using TreeViewStateInt = UnityEditor.IMGUI.Controls.TreeViewState<int>;
   using Object = UnityEngine.Object;
 
   [Serializable]
-  class FusionGridState : TreeViewState {
+  class FusionGridState : TreeViewStateInt {
     public MultiColumnHeaderState HeaderState;
     public bool                   SyncSelection;
   }
   
-  class FusionGridItem : TreeViewItem {
+  class FusionGridItem : TreeViewItemInt {
     public virtual Object TargetObject => null;
   }
   
@@ -5938,7 +5942,7 @@ namespace Fusion.Editor {
     protected abstract IEnumerable<Column> CreateColumns();
     protected abstract IEnumerable<TItem>  CreateRows();
 
-    protected virtual GenericMenu CreateContextMenu(TItem item, TreeView treeView) {
+    protected virtual GenericMenu CreateContextMenu(TItem item, TreeViewInt treeView) {
       return null;
     }
 
@@ -5956,7 +5960,7 @@ namespace Fusion.Editor {
 
       column.getSearchText ??= toString;
       column.getComparer ??= order => (a, b) => EditorUtility.NaturalCompare(toString(a), toString(b)) * order;
-      column.cellGUI ??= (item, rect, selected, focused) => TreeView.DefaultGUI.Label(rect, toString(item), selected, focused);
+  column.cellGUI ??= (item, rect, selected, focused) => EditorGUI.LabelField(rect, toString(item));
       if (string.IsNullOrEmpty(column.headerContent.text) && string.IsNullOrEmpty(column.headerContent.tooltip)) {
         column.headerContent = new GUIContent(propertyName);
       }
@@ -5977,7 +5981,7 @@ namespace Fusion.Editor {
       // public new int userData => throw new NotImplementedException();
     }
     
-    class InternalTreeView : TreeView {
+    class InternalTreeView : TreeViewInt {
       public InternalTreeView(FusionGrid<TItem, TState> grid, MultiColumnHeader header) : base(grid.State, header) {
         Grid = grid;
         showAlternatingRowBackgrounds = true;
@@ -6030,10 +6034,10 @@ namespace Fusion.Editor {
         return Grid._columns.Value[ud];
       }
       
-      protected override TreeViewItem BuildRoot() {
+      protected override TreeViewItemInt BuildRoot() {
         var allItems = new List<TItem>();
 
-        var root = new TreeViewItem {
+        var root = new TreeViewItemInt {
           id          = 0,
           depth       = -1,
           displayName = "Root"
@@ -6043,7 +6047,7 @@ namespace Fusion.Editor {
           allItems.Add(row);
         }
         
-        SetupParentsAndChildrenFromDepths(root, allItems.Cast<TreeViewItem>().ToList());
+        SetupParentsAndChildrenFromDepths(root, allItems.Cast<TreeViewItemInt>().ToList());
         return root;
       }
       
@@ -6061,7 +6065,7 @@ namespace Fusion.Editor {
         return column.getComparer(isSortedAscending ? 1 : -1);
       }
 
-      protected override IList<TreeViewItem> BuildRows(TreeViewItem root) {
+      protected override IList<TreeViewItemInt> BuildRows(TreeViewItemInt root) {
         var comparision = GetComparision();
         if (comparision == null) {
           return base.BuildRows(root);
@@ -6093,7 +6097,7 @@ namespace Fusion.Editor {
         }
       }
       
-      protected override bool DoesItemMatchSearch(TreeViewItem item_, string search) {
+      protected override bool DoesItemMatchSearch(TreeViewItemInt item_, string search) {
         var item = item_ as TItem;
         if (item == null) {
           return base.DoesItemMatchSearch(item_, search);
@@ -6136,7 +6140,7 @@ namespace Fusion.Editor {
       }
     }
     
-    class InternalTreeViewItem : TreeViewItem {
+    class InternalTreeViewItem : TreeViewItemInt {
       
     }
   }

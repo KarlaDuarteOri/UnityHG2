@@ -7,6 +7,9 @@ namespace Fusion.Editor {
   using UnityEngine;
   using Object = UnityEngine.Object;
 
+  using TreeViewInt = UnityEditor.IMGUI.Controls.TreeView<int>;
+  using TreeViewStateInt = UnityEditor.IMGUI.Controls.TreeViewState<int>;
+
   public class NetworkPrefabsInspector : EditorWindow {
 
     private Grid _grid = new Grid();
@@ -55,7 +58,7 @@ namespace Fusion.Editor {
     }
 
     [Serializable]
-    private class InspectorTreeViewState : TreeViewState {
+    private class InspectorTreeViewState : TreeViewStateInt {
       public MultiColumnHeaderState HeaderState;
       public bool                   SyncSelection;
     }
@@ -175,7 +178,7 @@ namespace Fusion.Editor {
           getComparer = order => (a, b) => EditorUtility.NaturalCompare(a.Source?.GetType().Name ?? "", b.Source?.GetType().Name ?? "") * order,
         };
         yield return MakeSimpleColumn(x => x.PrefabId, new() {
-          cellGUI = (item, rect, selected, focused) => TreeView.DefaultGUI.Label(rect, item.PrefabId.ToString(false, false), selected , focused),
+          cellGUI = (item, rect, selected, focused) => EditorGUI.LabelField(rect, item.PrefabId.ToString(false, false)),
           width = 50,
           autoResize = false
         });
@@ -204,7 +207,7 @@ namespace Fusion.Editor {
         }
       }
 
-      protected override GenericMenu CreateContextMenu(GridItem item, TreeView treeView) {
+      protected override GenericMenu CreateContextMenu(GridItem item, TreeViewInt treeView) {
         
         var menu = new GenericMenu();
 

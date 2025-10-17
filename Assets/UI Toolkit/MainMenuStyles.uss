@@ -1,3 +1,12 @@
+/* Colors for Reference: 
+   - Dark Text/Accent: rgb(40, 40, 40)
+   - Accent Green (Border/Titles): rgb(67, 160, 71) 
+   - Light Green (Primary Button/Highlight): rgb(102, 187, 106)
+   - Panel/Container BG: rgba(220, 240, 220, 0.95) (Pale Greenish White)
+   - Pale Blue/Grey (Secondary): rgb(189, 212, 220)
+   - Soft Red (Close/Danger): rgb(255, 120, 100)
+*/
+
 .main-container {
     width: 100%;
     height: 100%;
@@ -6,51 +15,53 @@
     flex-direction: column;
 }
 
+/* Player Name Container (Light, Tinted BG, Green Border) */
 .player-name-container {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
+    bottom: 15px;
+    left: 15px;
     flex-direction: row;
     align-items: center;
-    background-color: rgba(52, 73, 94, 0.9);
-    border-radius: 10px;
-    padding: 10px 15px;
-    border-width: 2px;
-    border-color: rgba(255, 152, 0, 0.5);
+    background-color: rgba(220, 240, 220, 0.95); /* Pale Greenish White */
+    border-radius: 15px; /* Slightly smaller radius */
+    padding: 15px 20px;
+    border-width: 4px; /* Thicker border */
+    border-color: rgb(67, 160, 71); /* Dark Green border */
 }
 
 .player-name-label {
-    font-size: 18px;
-    color: rgb(255, 152, 0);
+    font-size: 20px; /* Slightly larger */
+    color: rgb(40, 40, 40); /* Dark text */
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
-    margin-right: 10px;
+    margin-right: 15px;
 }
 
 .player-name-field {
     width: 180px;
-    height: 35px;
+    height: 40px; /* Slightly taller */
     font-size: 16px;
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
-    border-radius: 5px;
-    border-width: 1px;
-    border-color: rgba(255, 152, 0, 0.3);
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgb(102, 187, 106); /* Light Green border */
 }
 
 .player-name-field > .unity-text-field__input {
-    background-color: rgba(30, 40, 50, 0.9);
-    color: white;
+    background-color: rgba(240, 255, 240, 0.8); /* Very light, semi-transparent input BG */
+    color: rgb(40, 40, 40); /* Dark text */
     font-size: 16px;
-    padding: 8px;
-    border-radius: 5px;
-    min-height: 35px;
+    padding: 10px;
+    border-radius: 8px;
+    min-height: 40px;
     -unity-text-align: middle-left;
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
 }
 
 .player-name-field:focus {
-    border-color: rgb(255, 152, 0);
+    border-color: rgb(76, 175, 80); /* Solid green focus */
 }
 
+/* --- Titles --- */
 .title-container {
     justify-content: center;
     align-items: center;
@@ -58,128 +69,149 @@
 }
 
 .game-title {
-    font-size: 96px;
-    color: rgb(255, 152, 0);
+    font-size: 100px; /* Slightly larger */
+    color: rgb(67, 160, 71); /* Dark Green Title */
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
-    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
-    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); /* Softer shadow */
+    letter-spacing: 3px; /* Slightly more spaced */
 }
 
+/* --- Menu Buttons (Harmonized for Bright Style) --- */
 .menu-container {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    min-width: 300px;
+    min-width: 320px; /* Slightly wider container */
 }
 
 .menu-button {
-    width: 280px;
-    height: 60px;
-    margin: 12px;
-    border-radius: 15px;
-    border-width: 0;
-    font-size: 32px;
+    width: 300px; /* Wider button */
+    height: 70px; /* Taller button */
+    margin: 15px; /* More margin */
+    border-radius: 20px; /* More rounded */
+    border-width: 4px; /* Chunky border */
+    font-size: 36px; /* Larger text */
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
     transition-property: background-color, scale;
-    transition-duration: 0.2s;
+    transition-duration: 0.15s; /* Faster transition */
     scale: 1;
 }
 
 .primary-button {
-    background-color: rgb(76, 175, 80);
-    color: white;
+    /* Bright Green / Dark Text - Primary Action */
+    background-color: rgb(102, 187, 106); 
+    color: rgb(40, 40, 40);
+    border-color: rgb(67, 160, 71); 
 }
 
 .primary-button:hover {
-    background-color: rgb(102, 187, 106);
+    background-color: rgb(129, 212, 133); /* Brighter hover */
     scale: 1.05;
 }
 
 .primary-button:active {
-    background-color: rgb(56, 142, 60);
+    background-color: rgb(76, 175, 80); 
     scale: 0.98;
 }
 
 .secondary-button {
-    background-color: rgb(52, 73, 94);
-    color: white;
+    /* Pale Blue-Grey / Dark Text - Secondary Action */
+    background-color: rgb(189, 212, 220); 
+    color: rgb(40, 40, 40); 
+    border-color: rgb(149, 165, 166);
 }
 
 .secondary-button:hover {
-    background-color: rgb(69, 90, 120);
+    background-color: rgb(210, 228, 235);
     scale: 1.03;
 }
 
 .secondary-button:active {
-    background-color: rgb(44, 62, 80);
+    background-color: rgb(167, 184, 190);
     scale: 0.98;
 }
 
 .tertiary-button {
-    background-color: rgb(44, 62, 80);
-    color: white;
+    /* Slightly darker Grey / Dark Text - Utility/Back */
+    background-color: rgb(149, 165, 166); 
+    color: rgb(40, 40, 40); 
+    border-color: rgb(127, 140, 141);
 }
 
 .tertiary-button:hover {
-    background-color: rgb(40, 58, 76);
+    background-color: rgb(170, 185, 186);
     scale: 1.03;
 }
 
 .tertiary-button:active {
-    background-color: rgb(34, 48, 64);
+    background-color: rgb(127, 140, 141);
     scale: 0.98;
 }
 
-.settings-panel {
+/* --- Settings/Overlay Panels (Harmonized) --- */
+
+.settings-panel, .overlay-panel {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.6); /* Softer backdrop */
     justify-content: center;
     align-items: center;
 }
 
-.settings-container {
-    background-color: rgb(52, 73, 94);
-    border-radius: 20px;
-    border-width: 3px;
-    border-color: rgb(255, 152, 0);
-    width: 600px;
-    max-height: 70%;
+.settings-container, .panel-container {
+    /* Light, tinted background with a thick green border */
+    background-color: rgba(220, 240, 220, 0.95); 
+    border-radius: 25px; /* Consistent large radius */
+    border-width: 5px; /* Chunky border */
+    border-color: rgb(67, 160, 71); 
+    width: 650px; /* Slightly wider */
+    max-height: 80%; /* Adjusted height */
     padding: 30px;
 }
 
-.settings-header {
+.settings-header, .panel-header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .settings-title {
     font-size: 48px;
-    color: rgb(255, 152, 0);
+    color: rgb(67, 160, 71); /* Dark Green Title */
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
 }
 
+.panel-title {
+    font-size: 48px;
+    color: rgb(67, 160, 71); /* Dark Green Title */
+    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
+    -unity-font-style: bold;
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+}
+
 .close-button {
-    width: 40px;
-    height: 40px;
-    background-color: rgb(231, 76, 60);
+    /* Soft Red-Orange / White Text, Thematic Border */
+    width: 45px;
+    height: 45px;
+    background-color: rgb(255, 120, 100);
     color: white;
-    border-radius: 20px;
-    border-width: 0;
-    font-size: 24px;
+    border-radius: 25px;
+    border-width: 3px;
+    border-color: rgb(200, 90, 80);
+    font-size: 28px;
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     transition-duration: 0.2s;
 }
 
 .close-button:hover {
-    background-color: rgb(192, 57, 43);
-    scale: 1.1;
+    background-color: rgb(255, 140, 120);
+    scale: 1.05;
 }
 
 .settings-content {
@@ -188,11 +220,14 @@
 
 .settings-section {
     margin-bottom: 30px;
+    padding: 15px;
+    background-color: rgba(189, 212, 220, 0.3); /* Soft blue-grey tint for sections */
+    border-radius: 12px;
 }
 
 .section-title {
-    font-size: 24px;
-    color: rgb(255, 152, 0);
+    font-size: 28px;
+    color: rgb(67, 160, 71); /* Dark Green Title */
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
     margin-bottom: 15px;
@@ -202,38 +237,40 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-    min-height: 30px;
+    margin-bottom: 15px;
+    min-height: 35px;
 }
 
 .setting-label {
     font-size: 18px;
-    color: white;
+    color: rgb(40, 40, 40); /* Dark text */
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
-    width: 180px;
+    width: 200px;
 }
 
 .setting-slider {
-    width: 200px;
+    width: 250px; /* Wider slider */
     height: 20px;
 }
 
 .setting-dropdown {
     width: 180px;
-    height: 35px;
-    background-color: rgb(44, 62, 80);
-    border-radius: 5px;
-    color: white;
+    height: 40px; /* Taller dropdown */
+    background-color: rgb(200, 220, 200); /* Light green tint */
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgb(102, 187, 106);
+    color: rgb(40, 40, 40); /* Dark text */
     font-size: 16px;
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
 }
 
 .setting-dropdown .unity-base-dropdown__label {
-    padding: 8px;
-    min-height: 35px;
+    padding: 10px;
+    min-height: 40px;
     -unity-text-align: middle-center;
     font-size: 16px;
-    color: white;
+    color: rgb(40, 40, 40); /* Dark text */
 }
 
 .setting-dropdown .unity-base-dropdown__arrow {
@@ -246,133 +283,83 @@
 }
 
 .setting-value {
-    font-size: 16px;
-    color: rgb(255, 152, 0);
+    font-size: 18px;
+    color: rgb(76, 175, 80); /* Solid Green Value */
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
-    width: 60px;
-    -unity-text-align: middle-center;
+    width: 70px;
+    -unity-text-align: middle-right;
 }
 
-/* Overlay Panel Styles (Host/Join/Lobby) */
-.overlay-panel {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.85);
-    justify-content: center;
-    align-items: center;
-}
+/* --- Overlay Panels (Host/Join/Lobby) --- */
 
-.panel-container {
-    background-color: rgb(52, 73, 94);
-    border-radius: 20px;
-    border-width: 3px;
-    border-color: rgb(255, 152, 0);
-    width: 500px;
-    padding: 30px;
-    align-self: center;
-    flex-shrink: 0;
-}
-
-.panel-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
-
-.panel-title {
-    font-size: 42px;
-    color: rgb(255, 152, 0);
-    -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
-    -unity-font-style: bold;
-    flex-grow: 1;
-    -unity-text-align: middle-center;
-}
-
-.panel-header-spacer {
-    width: 40px;
-    height: 40px;
-    opacity: 0;
-    flex-shrink: 0;
-}
-
-.panel-content {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-}
+/* panel-container, panel-header, panel-title already adjusted above */
 
 .panel-content--centered {
     align-items: center;
 }
 
-.panel-content--centered > .section-title,
-.panel-content--centered > .status-label {
-    -unity-text-align: middle-center;
-    width: 100%;
-}
-
-.panel-content--centered > .text-input {
-    width: 100%;
-    max-width: 340px;
-}
-
-.center-action-button {
-    align-self: center;
-}
-
 .text-input {
-    height: 50px;
+    height: 55px; /* Taller input */
     font-size: 24px;
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
-    border-radius: 8px;
-    border-width: 2px;
-    border-color: rgba(255, 152, 0, 0.5);
-    background-color: rgba(30, 40, 50, 0.9);
-    color: white;
+    border-radius: 12px; /* More rounded */
+    border-width: 3px; /* Thicker border */
+    border-color: rgb(76, 175, 80); /* Green border */
+    background-color: rgba(240, 255, 240, 0.9); /* Very light, semi-transparent BG */
+    color: rgb(40, 40, 40); /* Dark text */
     -unity-text-align: middle-center;
 }
 
 .text-input > .unity-text-field__input {
     background-color: rgba(0, 0, 0, 0);
-    color: white;
+    color: rgb(40, 40, 40); /* Dark text */
     padding: 10px;
-    border-radius: 6px;
+    border-radius: 10px;
     -unity-text-align: middle-center;
-    --unity-selection-color: rgba(255, 152, 0, 0.35);
+    --unity-selection-color: rgba(76, 175, 80, 0.35); /* Green selection highlight */
 }
 
 .text-input > .unity-text-field__placeholder {
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(40, 40, 40, 0.4);
     -unity-font-style: italic;
 }
 
 .text-input:focus {
-    border-color: rgb(255, 152, 0);
+    border-color: rgb(67, 160, 71);
 }
 
 .status-label {
-    font-size: 16px;
-    color: yellow;
+    /* Retain warning color, but with a light background for contrast */
+    font-size: 18px;
+    color: rgb(255, 152, 0); 
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-text-align: middle-center;
+    background-color: rgba(255, 255, 200, 0.8); /* Light yellow background highlight */
+    border-radius: 5px;
+    padding: 5px 10px;
+    border-width: 1px;
+    border-color: rgb(255, 152, 0);
 }
 
 .room-code-label {
-    font-size: 32px;
-    color: rgb(76, 175, 80);
+    /* Dark Green code, highlighted with soft background */
+    font-size: 36px;
+    color: rgb(67, 160, 71); 
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     letter-spacing: 4px;
+    background-color: rgba(102, 187, 106, 0.2); /* Soft green background highlight */
+    padding: 5px 15px;
+    border-radius: 10px;
 }
 
 .player-list-scroll {
-    background-color: rgba(30, 40, 50, 0.6);
-    border-radius: 10px;
-    border-width: 2px;
-    border-color: rgba(255, 152, 0, 0.3);
+    /* Light, slightly tinted player list background */
+    background-color: rgba(189, 212, 220, 0.4); 
+    border-radius: 12px;
+    border-width: 3px;
+    border-color: rgb(149, 165, 166);
     padding: 10px;
 }
 
@@ -381,28 +368,30 @@
 }
 
 .player-list-item {
+    /* Very light item background */
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(52, 73, 94, 0.8);
-    border-radius: 8px;
+    background-color: rgba(240, 255, 240, 0.8); 
+    border-radius: 10px;
     padding: 10px 15px;
-    margin-bottom: 8px;
-    min-height: 40px;
+    margin-bottom: 10px;
+    min-height: 45px;
 }
 
 .player-name-label {
     font-size: 18px;
-    color: white;
+    color: rgb(40, 40, 40); /* Dark text */
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
 }
 
 .player-host-badge {
+    /* Orange accent retained, but background is lighter */
     font-size: 14px;
     color: rgb(255, 152, 0);
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
-    background-color: rgba(255, 152, 0, 0.2);
-    border-radius: 5px;
-    padding: 3px 8px;
+    background-color: rgba(255, 152, 0, 0.3); 
+    border-radius: 8px;
+    padding: 4px 10px;
 }

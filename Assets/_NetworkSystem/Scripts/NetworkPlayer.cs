@@ -24,7 +24,6 @@ public class NetworkPlayer : NetworkBehaviour
     [SerializeField] private Canvas hudCanvas;
 
     private Vector3 velocity;
-    private float gravity = -9.81f;
 
     private void Awake()
     {
