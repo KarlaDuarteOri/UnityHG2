@@ -55,6 +55,11 @@
     justify-content: center;
     align-items: center;
     margin-bottom: 80px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 20px;
+    padding: 20px 50px;
+    border-width: 3px;
+    border-color: rgba(255, 152, 0, 0.6);
 }
 
 .game-title {
@@ -62,7 +67,7 @@
     color: rgb(255, 152, 0);
     -unity-font-definition: url("project://database/Assets/Fonts/Fredoka-VariableFont_wdth,wght.ttf?fileID=12800000&guid=ac38ddf4dc5ab7444bf07642e75c0c16&type=3#Fredoka-VariableFont_wdth,wght");
     -unity-font-style: bold;
-    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+    text-shadow: 4px 4px 10px rgba(0, 0, 0, 1);
     letter-spacing: 2px;
 }
 
