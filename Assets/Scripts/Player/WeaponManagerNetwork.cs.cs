@@ -1,57 +1,51 @@
-﻿using Fusion;
+using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Scripts
 {
-    /*Esta clase controlara los inputs que realice el jugador*/
-    public class PlayerController : MonoBehaviour
+    public class WeaponManagerNetwork : NetworkBehaviour
     {
-
-        [SerializeField] private Animator playerAnimator;
-        [SerializeField] private FirstPersonMovement playerMovement;
-        /*Creamos un weapon inicial para tenerlo como base y una lista donde iremos intercambiando las armas*/
         [SerializeField] private Weapon currentWeapon;
         [SerializeField] private List<Weapon> listWeapons = new List<Weapon>();
-        private bool isWalk;
+        //Controlador de sonido se puede realizar en un script aparte para mejor control, ahora solo esta para pruebas
+        [SerializeField] private AudioSource audioSource;
         private int currentindex = 0;
+
+        private void Start()
+        {
+            for (int i = 0; i < listWeapons.Count; i++)
+            {
+                if (!listWeapons[i].isAvailable)
+                {
+                    listWeapons[i].gameObject.SetActive(false);
+                }
+            }
+        }
 
         private void Update()
         {
-            if (PauseMenuController.IsPaused)
-            {
-                playerMovement.SetDirection(0f, 0f);
-                playerAnimator.SetBool("Walk", false);
-                return;
-            }
-
-            InputMove();
             InputChangeWeapon();
             InputAttack();
-        }
-        /*Detecta los movimientos por teclado WASD o Flechas direccion, para mandar la direccion en la que se desplaza*/
-        private void InputMove()
-        {
-            float movX = Input.GetAxis("Horizontal");
-            float movZ = Input.GetAxis("Vertical");
-            playerMovement.SetDirection(movX, movZ);
-            if (movX != 0 || movZ != 0)
-            {
-                isWalk = true;
-            }
-            else
-            {
-                isWalk = false;
-            }
-            playerAnimator.SetBool("Walk", isWalk);
         }
 
         /*Detecta el ataque segun el arma actual que tiene el juegador*/
         private void InputAttack()
         {
+            if(currentWeapon == null)
+            {
+                return;
+            }
+
+            if (!currentWeapon.isAvailable)
+            {
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
             {
                 currentWeapon.StartAttack();
+                audioSource.PlayOneShot(currentWeapon.audioClipEffect);
             }
         }
         /*Detecta los cambios de armas segun el orden que se necesite, teclas o scroll*/
@@ -117,7 +111,7 @@ namespace Scripts
 
             for (int i = 0; i < listWeapons.Count; i++)
             {
-                bool isActive = i == currentindex;
+                bool isActive = i == currentindex && listWeapons[i].isAvailable;
                 listWeapons[i].gameObject.SetActive(isActive);
             }
 
@@ -127,6 +121,18 @@ namespace Scripts
         public Weapon GetCurrentWeapon()
         {
             return currentWeapon;
+        }
+
+        public void ActiveWeapon(string nameWeapon)
+        {
+            for (int i = 0; i < listWeapons.Count; i++)
+            {
+                if (listWeapons[i].nameWeapon == nameWeapon && !listWeapons[i].isAvailable)
+                {
+                    listWeapons[i].isAvailable = true;
+                    currentindex = i;
+                }
+            }
         }
     }
 }
