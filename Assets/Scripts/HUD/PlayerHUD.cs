@@ -1,9 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Fusion;
+using System;
 
 public class PlayerHUD : MonoBehaviour
 {
+    [Header("Prefab del Canvas HUD")]
+    [SerializeField] private GameObject hudPrefab;
+
     [Header("Referencias UI")]
     [SerializeField] private Slider healthBar;
     [SerializeField] private Slider shieldBar;
@@ -17,33 +22,35 @@ public class PlayerHUD : MonoBehaviour
 
     private PlayerHealth playerHealth;
     private PlayerShield playerShield;
-    private AlivePlayersCounter playersCounter;
+    //private AlivePlayersCounter playersCounter;
 
     private float currentHealthDisplay;
     private float currentShieldDisplay;
 
+    public static PlayerHUD Instance { get; private set; }
+    private GameObject hudInstance;
+
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+
+
     void Start()
     {
-        if (healthBar == null)
-            healthBar = GameObject.Find("HealthBar")?.GetComponent<Slider>();
-        if (shieldBar == null)
-            shieldBar = GameObject.Find("ShieldBar")?.GetComponent<Slider>();
-        if (healthText == null)
-            healthText = GameObject.Find("HealthText")?.GetComponent<TextMeshProUGUI>();
-        if (shieldText == null)
-            shieldText = GameObject.Find("ShieldText")?.GetComponent<TextMeshProUGUI>();
-        if (healthFill == null)
-            healthFill = GameObject.Find("HealthFill")?.GetComponent<Image>();
-        if (shieldFill == null)
-            shieldFill = GameObject.Find("ShieldFill")?.GetComponent<Image>();   
-            
-        currentHealthDisplay = 0f;
-        currentShieldDisplay = 0f;
-
-        healthBar.maxValue = 100; 
-        shieldBar.maxValue = 50;
-
-        playersCounter = FindFirstObjectByType<AlivePlayersCounter>();
+        InstantiateHUD();
+        InitializeHUDReferences();
+        FindLocalPlayer();
+        //playersCounter = FindFirstObjectByType<AlivePlayersCounter>();
     }
 
     void Update()
@@ -57,32 +64,101 @@ public class PlayerHUD : MonoBehaviour
         UpdateHealthDisplay();
         UpdateShieldDisplay();
         UpdateHealthColor();
+        
     }
+
+    private void InstantiateHUD()
+    {
+        if (hudPrefab != null)
+        {
+            hudInstance = Instantiate(hudPrefab);
+        }
+        else
+        {
+            Debug.LogError("HUD Canvas Prefab no asignado en el Inspector");
+        }
+    }
+
+    private void InitializeHUDReferences()
+    {
+        if (hudInstance == null)
+        {
+            Debug.LogError("HUD instance es null, no se pueden inicializar referencias");
+            return;
+        }
+
+        healthBar = GameObject.Find("HealthBar")?.GetComponent<Slider>();
+        shieldBar = GameObject.Find("ShieldBar")?.GetComponent<Slider>();
+        healthText = GameObject.Find("HealthText")?.GetComponent<TextMeshProUGUI>();
+        shieldText = GameObject.Find("ShieldText")?.GetComponent<TextMeshProUGUI>();
+        healthFill = GameObject.Find("HealthFill")?.GetComponent<Image>();
+        shieldFill = GameObject.Find("ShieldFill")?.GetComponent<Image>();
+
+        if (healthBar == null) Debug.LogError("HealthBar no encontrado en el HUD");
+        if (shieldBar == null) Debug.LogError("ShieldBar no encontrado en el HUD");
+        if (healthText == null) Debug.LogError("HealthText no encontrado en el HUD");
+        if (shieldText == null) Debug.LogError("ShieldText no encontrado en el HUD");
+
+        currentHealthDisplay = 0f;
+        currentShieldDisplay = 0f;
+
+        if (healthBar != null) 
+        {
+            healthBar.maxValue = 100;
+            healthBar.value = 0;
+        }
+        if (shieldBar != null)
+        {
+            shieldBar.maxValue = 50;
+            shieldBar.value = 0;
+        }
+
+        //playersCounter = FindFirstObjectByType<AlivePlayersCounter>();
+    }
+
 
     private void FindLocalPlayer()
     {
-        PlayerHealth[] allHealth = FindObjectsByType<PlayerHealth>(FindObjectsSortMode.None);
-        
-        foreach (PlayerHealth health in allHealth)
+
+        GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("Player");
+
+        foreach (GameObject playerObj in playerObjects)
         {
-            if (health.HasStateAuthority) //jugador local
+            PlayerHealth health = playerObj.GetComponent<PlayerHealth>();
+            
+
+            if (health != null && health.HasStateAuthority)
             {
+                if (playerHealth != null)
+                {
+                    playerHealth.OnHealthChanged -= OnHealthChanged;
+                }
+                if (playerShield != null)
+                {
+                    playerShield.OnShieldChanged -= OnShieldChanged;
+                }
+
                 playerHealth = health;
-                playerShield = health.GetComponent<PlayerShield>();
-                
-                
+                playerShield = playerObj.GetComponent<PlayerShield>();
+
+                if (playerHealth == null || playerShield == null)
+                {
+                    Debug.LogWarning("Jugador encontrado pero falta PlayerHealth o PlayerShield");
+                    continue;
+                }
+
                 playerHealth.OnHealthChanged += OnHealthChanged;
                 playerShield.OnShieldChanged += OnShieldChanged;
-                
+
                 currentHealthDisplay = playerHealth.GetCurrentHealth();
                 currentShieldDisplay = playerShield.GetCurrentShield();
-                
-                healthBar.value = currentHealthDisplay;
-                shieldBar.value = currentShieldDisplay;
-                
+
+                if (healthBar != null) healthBar.value = currentHealthDisplay;
+                if (shieldBar != null) shieldBar.value = currentShieldDisplay;
+
                 UpdateTexts();
-                
-                Debug.Log("HUD conectado al jugador local");
+
+                Debug.Log("HUD Global conectado al jugador local");
                 break;
             }
         }
@@ -102,6 +178,8 @@ public class PlayerHUD : MonoBehaviour
 
     private void UpdateHealthDisplay()
     {
+        if (playerHealth == null || healthBar == null) return;
+
         float targetHealth = playerHealth.GetCurrentHealth();
         currentHealthDisplay = Mathf.Lerp(currentHealthDisplay, targetHealth, Time.deltaTime * smoothSpeed);
         healthBar.value = currentHealthDisplay;
@@ -109,6 +187,8 @@ public class PlayerHUD : MonoBehaviour
 
     private void UpdateShieldDisplay()
     {
+        if (playerShield == null || shieldBar == null) return;
+
         float targetShield = playerShield.GetCurrentShield();
         currentShieldDisplay = Mathf.Lerp(currentShieldDisplay, targetShield, Time.deltaTime * smoothSpeed);
         shieldBar.value = currentShieldDisplay;
@@ -116,16 +196,16 @@ public class PlayerHUD : MonoBehaviour
 
     private void UpdateTexts()
     {
-        if (healthText != null)
+        if (healthText != null && playerHealth != null)
             healthText.text = $"{playerHealth.GetCurrentHealth()} / {healthBar.maxValue} HP";
         
-        if (shieldText != null)
+        if (shieldText != null && playerShield != null)
             shieldText.text = $"{playerShield.GetCurrentShield()} / {shieldBar.maxValue} Shield";
     }
 
     private void UpdateHealthColor()
     {
-        if (healthFill != null)
+        if (healthFill != null && healthBar != null)
         {
             float healthPercent = healthBar.value / healthBar.maxValue;
 
@@ -145,7 +225,6 @@ public class PlayerHUD : MonoBehaviour
 
     private void OnDestroy()
     {
-        //Limpiar suscripciones
         if (playerHealth != null)
             playerHealth.OnHealthChanged -= OnHealthChanged;
         if (playerShield != null)

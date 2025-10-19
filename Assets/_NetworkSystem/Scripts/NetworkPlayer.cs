@@ -20,8 +20,6 @@ public class NetworkPlayer : NetworkBehaviour
     [Networked] private float cameraPitch { get; set; }
     
     [Header("HUD")]
-    [SerializeField] private GameObject hudPrefab;
-    [SerializeField] private Canvas hudCanvas;
 
     private Vector3 velocity;
 
@@ -45,8 +43,7 @@ public class NetworkPlayer : NetworkBehaviour
             {
                 renderer.material.color = Color.green;
             }
-            GameObject hudInstance = Instantiate(hudPrefab);
-            hudCanvas = hudInstance.GetComponent<Canvas>();
+            
         }
         else
         {
