@@ -2,13 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class InventorySystem : MonoBehaviour
 {
     [Header("UI References")]
     public GameObject inventoryPanel;
     public Image[] slotImages;
-    public Text[] slotQuantityTexts; // Para mostrar cantidad
+    public TextMeshProUGUI[] slotQuantityTexts; // Para mostrar cantidad
 
     [Header("Inventory Settings")]
     public int maxSlots = 6;
